@@ -168,7 +168,7 @@
   <header class="header wrap">
     <a class="brand" href="#" aria-label="SIEGE home"><svg viewBox="0 0 30 36" fill="none" aria-hidden="true"><path d="M4 2 25 14 18 18 4 10V2Z M25 34 4 22 11 18 25 26V34Z M4 14 25 26 M4 10 25 22" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>SIEGE</a>
     <nav class="nav" aria-label="Main navigation">
-      <a class="about-link" href="#loop">The loop</a><a class="optional" href="#built-with">Built with</a><a class="nav-cta" data-app-path="/" href="http://localhost:8000/">Enter war room <span aria-hidden="true">↗</span></a>
+      <a class="about-link" href="#loop">The loop</a><a class="optional" href="#built-with">Built with</a><a class="optional" data-app-path="/warroom" href="http://localhost:8000/warroom">Telemetry</a><a class="nav-cta" data-app-path="/" href="http://localhost:8000/">Enter Arena <span aria-hidden="true">↗</span></a>
     </nav>
   </header>
   <main id="main">
@@ -179,7 +179,7 @@
           <p class="hero-word" aria-hidden="true">SIEGE</p>
           <h1 id="hero-heading">Break the agent.<br><span>Build the defense.</span></h1>
           <p class="hero-description">A room of people attacks one AI support agent. Every breach teaches a defender to improve the gate in front of its tools. The next round meets a stronger boundary.</p>
-          <div class="actions"><a class="button" data-app-path="/attack" href="http://localhost:8000/attack">Join the attack <span class="arrow" aria-hidden="true">↗</span></a><a class="text-link" data-app-path="/" href="http://localhost:8000/">Watch the war room <span aria-hidden="true">→</span></a></div>
+          <div class="actions"><a class="button" data-app-path="/attack" href="http://localhost:8000/attack">Join the attack <span class="arrow" aria-hidden="true">↗</span></a><a class="text-link" data-app-path="/" href="http://localhost:8000/">Watch the Arena <span aria-hidden="true">→</span></a></div>
           <p class="hero-note">Real tool calls. Exact breach labels. Evaluated patches.</p>
         </div>
         <figure class="arena" data-visual="art" aria-label="Conceptual artwork and schematic showing attacks meeting the boundary around an AI agent. Illustrative, not live activity.">
@@ -261,19 +261,19 @@
       </div>
       <div class="proof"><div><h3>Security has to preserve usefulness.</h3><p>A candidate must improve the evaluated catch rate and keep benign allow at or above the configured floor. Blocking everything fails this test; a rejected candidate leaves the current gate active.</p></div><div class="proof-metric"><strong>≥90%</strong><span>Default benign allow floor<br>Evaluation requirement</span></div></div>
     </section>
-    <section class="film-section section wrap" aria-labelledby="film-heading">
+    <section id="film" class="film-section section wrap" aria-labelledby="film-heading">
       <div class="section-heading"><p class="eyebrow mono">03 / Watch the boundary</p><h2 id="film-heading">A system you can <span>put under pressure.</span></h2></div>
       <div class="film-layout"><figure class="film">
         <div class="film-screen" id="film-screen">
-          <img id="film-poster" src="../media/siege_keyart.png" alt="Cinematic concept art showing attacks meeting the defensive boundary around an AI agent." loading="lazy" width="1672" height="941">
-          <video id="siege-film" controls playsinline preload="metadata" src="../media/siege_social.mp4" poster="../media/siege_keyart.png" hidden aria-label="SIEGE concept film: the room attacks and the gate learns"><track kind="captions" src="../media/siege_social.vtt" srclang="en" label="English"></video>
+          <img id="film-poster" src="../media/siege_social_landscape_poster.jpg" alt="Poster for the SIEGE concept film." loading="lazy" width="1672" height="941">
+          <video id="siege-film" controls playsinline preload="metadata" src="../media/siege_social.mp4" poster="../media/siege_social_landscape_poster.jpg" hidden aria-label="SIEGE concept film: the room attacks and the gate learns"><track kind="captions" src="../media/siege_social.vtt" srclang="en" label="English"></video>
         </div>
         <figcaption class="film-bottom"><p><strong id="film-title">The room attacks. The gate learns.</strong><span id="film-note">Concept film · illustrative visuals, not live activity. Press play for audio.</span></p><a class="text-link" id="social-download" href="../media/siege_social.mp4" download>Download film <span aria-hidden="true">↓</span></a></figcaption>
       </figure>
-      <figure class="film portrait-film"><video id="portrait-film" controls playsinline preload="metadata" poster="../media/siege_keyart.png" aria-label="Portrait edition of the SIEGE concept film"><source src="../media/siege_social_vertical.mp4" type="video/mp4"><track kind="captions" src="../media/siege_social.vtt" srclang="en" label="English"></video><figcaption><p><strong>Built for the small screen.</strong>Portrait concept film · 9:16<br>Press play for audio.</p><div class="downloads"><a href="../media/siege_social_vertical.mp4" download>Download portrait ↓</a></div></figcaption></figure></div>
+      <figure class="film portrait-film"><video id="portrait-film" controls playsinline preload="metadata" poster="../media/siege_social_portrait_poster.jpg" aria-label="Portrait edition of the SIEGE concept film"><source src="../media/siege_social_vertical.mp4" type="video/mp4"><track kind="captions" src="../media/siege_social.vtt" srclang="en" label="English"></video><figcaption><p><strong>Built for the small screen.</strong>Portrait concept film · 9:16<br>Press play for audio.</p><div class="downloads"><a href="../media/siege_social_vertical.mp4" download>Download portrait ↓</a></div></figcaption></figure></div>
       <div class="asset-grid">
-        <figure class="asset"><video id="siege-loop" controls muted loop playsinline preload="metadata" poster="../media/siege_keyart.png" aria-label="Silent Blender loop visualizing attacks at a defensive gate"><source src="../media/siege_loop.mp4" type="video/mp4"></video><figcaption><h3>The boundary, in motion.</h3><p>Original Blender animation · conceptual · silent loop.<br>Use the video controls to play. Nothing auto-plays.</p><div class="downloads"><a href="../media/siege_loop.mp4" download>Download MP4 ↓</a><a href="../media/siege_loop.webm" download>Download WebM ↓</a></div></figcaption></figure>
-        <figure class="asset"><img src="../media/siege_keyart.png" alt="Red attack beams strike a glowing green protective gate." loading="lazy" width="1672" height="941"><figcaption><h3>Pressure meets a stronger boundary.</h3><p>AI-generated concept artwork.<br>Ready for your cover slide and project page.</p><div class="downloads"><a href="../media/siege_keyart.png" download>Download artwork ↓</a><a data-app-path="/" href="http://localhost:8000/">Open the live app ↗</a></div></figcaption></figure>
+        <figure class="asset"><video id="siege-loop" controls muted loop playsinline preload="metadata" poster="../media/siege_poster.jpg" aria-label="Silent Blender loop visualizing attacks at a defensive gate"><source src="../media/siege_loop.mp4" type="video/mp4"></video><figcaption><h3>The boundary, in motion.</h3><p>Original Blender animation · conceptual · silent loop.<br>Use the video controls to play. Nothing auto-plays.</p><div class="downloads"><a href="../media/siege_loop.mp4" download>Download MP4 ↓</a><a href="../media/siege_loop.webm" download>Download WebM ↓</a></div></figcaption></figure>
+        <figure class="asset"><img src="../media/siege_keyart.png" alt="Red attack beams strike a glowing green protective gate." loading="lazy" width="1672" height="941"><figcaption><h3>Pressure meets a stronger boundary.</h3><p>AI-generated concept artwork.<br>Ready for your cover slide and project page.</p><div class="downloads"><a href="../media/siege_keyart.png" download>Download artwork ↓</a><a data-app-path="/" href="http://localhost:8000/">Open the Arena ↗</a></div></figcaption></figure>
       </div>
     </section>
     <section id="built-with" class="section stack wrap" aria-labelledby="stack-heading">
