@@ -12,6 +12,8 @@
 [![Hackathon: CoreWeave Hacks 2026](https://img.shields.io/badge/hackathon-CoreWeave%20Hacks%202026-ff3b5c)](#built-at-coreweave-hacks)
 [![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/vnmoorthy/siege/blob/main/notebooks/siege_lab.py)
 
+Live lab on molab (GPU): https://molab.marimo.io/notebooks/nb_JJREjE7meQ5T3n2SkNFCoL
+
 SIEGE puts a live customer-support agent with real tools (refunds, address changes, discounts, store credit, order and profile lookups) in front of a room of 200 people whose job is to make it misbehave. Every tool call the agent proposes passes through a typed action gate, TypeSafe System One, before it can execute. Every breach is exact: the gate allowed a call, a deterministic policy oracle says it was forbidden, and it executed. When a round ends, a defender loop reads the breach traces, rewrites the gate policy and a Python prefilter, amplifies each breach into variants with a red-team model, validates the prefilter in a W&B Sandbox, scores the candidate with a Weave Evaluation against a benign corpus, and ships it only if the catch rate rises while legitimate customers keep getting served. The agent itself is never modified. The room keeps attacking; the breach rate on the wall falls.
 
 ## The loop

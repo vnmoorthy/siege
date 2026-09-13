@@ -172,7 +172,7 @@ function shot(slide, p, x, y, w, h, label) {
              ["W&B Weave", "Every turn, gate call, oracle verdict and defender stage is a trace. Each candidate gate is a weave.Evaluation; its verdict decides what ships.", C.blue],
              ["CoreWeave Sandboxes", "Defender-written prefilter code is validated inside a serverless sandbox before it may run.", C.amber],
              ["W&B Inference", "gpt-oss-20b (agent), DeepSeek V4 Pro (defender), Nemotron 3 Ultra (red team), all on CoreWeave GPUs.", C.violet],
-             ["marimo", "Reactive calibration lab: P(allow) vs oracle outcome, what-if on the ship rule, live over the same database.", C.red]];
+             ["marimo on molab", "Reactive lab over the live store: TypeSafe calibration (Brier, ECE), what-if on the ship rule, GPU attack map on a Blackwell.", C.red]];
   t.forEach((r, i) => { const y = 1.8 + i * 0.92; card(s, 0.5, y, 8.0, 0.82, C.card);
     s.addShape(pres.ShapeType.ellipse, { x: 0.7, y: y + 0.26, w: 0.3, h: 0.3, fill: { color: r[2] }, line: { color: r[2], width: 0 } });
     s.addText(r[0], { x: 1.15, y: y + 0.08, w: 2.6, h: 0.66, fontFace: F, fontSize: 15, bold: true, color: C.white, valign: "middle", isTextBox: true, margin: 0 });
