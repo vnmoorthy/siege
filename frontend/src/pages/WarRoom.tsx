@@ -440,9 +440,12 @@ export default function WarRoom() {
   }
 
   return (
-    <div className="bg-grid flex h-screen w-screen flex-col gap-4 overflow-hidden p-4">
+    <div className={clsx('flex h-screen w-screen flex-col gap-4 overflow-hidden p-4', fieldOn ? 'relative' : 'bg-grid')}>
+      {/* Living battlefield behind the panels (fixed, z-0, pointer-events none) */}
+      {fieldOn && <SiegeField state={state} events={events} />}
+
       {/* Header */}
-      <header className="glass flex h-24 shrink-0 items-center gap-6 px-5">
+      <header className="glass relative z-10 flex h-24 shrink-0 items-center gap-6 px-5">
         <div className="flex items-center gap-4">
           <div>
             <div className="flex items-center gap-2">
@@ -463,7 +466,18 @@ export default function WarRoom() {
             <span className="num">
               {state.providers.agent.model} · gate {state.providers.gate.provider} · defender {state.providers.defender.model}
             </span>
-            <Link to={href('/admin')} className="ml-auto text-fg-3 underline-offset-2 hover:text-fg hover:underline">
+            <button
+              type="button"
+              onClick={toggleField}
+              aria-pressed={fieldOn}
+              aria-label={fieldOn ? 'Battlefield on. Click to hide the field.' : 'Battlefield off. Click to show the field.'}
+              title={fieldOn ? 'field on — click to hide' : 'field off — click to show'}
+              className={clsx('ml-auto inline-flex items-center gap-1 rounded px-1.5 py-0.5 transition-colors', fieldOn ? 'text-allow hover:text-fg' : 'text-fg-3 hover:text-fg')}
+            >
+              <Orbit size={12} />
+              <span className="num">field {fieldOn ? 'on' : 'off'}</span>
+            </button>
+            <Link to={href('/admin')} className="text-fg-3 underline-offset-2 hover:text-fg hover:underline">
               control
             </Link>
           </div>
