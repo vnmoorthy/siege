@@ -1,0 +1,52 @@
+"""Encode the procedural SIEGE frames to browser-ready videos and a poster.
+
+Usage: python blender/encode_astra.py --frames blender/astra_frames
+Only Python's standard library and an installed ffmpeg/ffprobe are required.
+"""
+import argparse
+import json
+from pathlib import Path
+import shutil
+import subprocess
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--frames', type=Path, required=True)
+parser.add_argument('--fps', type=int, default=30)
+parser.add_argument('--ffmpeg', default='/opt/homebrew/bin/ffmpeg')
+parser.add_argument('--name', default='siege_loop')
+parser.add_argument('--poster-frame', type=int, default=28)
+args = parser.parse_args()
+root = Path(__file__).resolve().parents[1]
+dest = root / 'docs' / 'media'
+public = root / 'frontend' / 'public' / 'media'
+dest.mkdir(parents=True, exist_ok=True)
+public.mkdir(parents=True, exist_ok=True)
+frames = sorted(args.frames.glob('frame_*.png'))
+if not frames:
+    raise SystemExit(f'No rendered frames found: {args.frames}')
+indices = [int(p.stem.split('_')[-1]) for p in frames]
+if indices != list(range(indices[0], indices[-1] + 1)):
+    raise SystemExit('Frame sequence has gaps; refusing to silently shorten video.')
+
+def run(*cmd):
+    subprocess.run([str(x) for x in cmd], check=True)
+
+common = [args.ffmpeg, '-hide_banner', '-loglevel', 'error', '-y', '-framerate', str(args.fps),
+          '-start_number', str(indices[0]), '-i', str(args.frames / 'frame_%04d.png')]
+mp4 = dest / f'{args.name}.mp4'
+webm = dest / f'{args.name}.webm'
+run(*common, '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', mp4)
+run(*common, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '32', '-row-mt', '1', '-cpu-used', '4', '-pix_fmt', 'yuv420p', '-an', webm)
+poster = dest / 'siege_poster.jpg'
+poster_input = args.frames / f'frame_{args.poster_frame:04d}.png'
+if not poster_input.exists():
+    poster_input = frames[0]
+run(args.ffmpeg, '-hide_banner', '-loglevel', 'error', '-y', '-i', poster_input, '-frames:v', '1', '-q:v', '2', poster)
+for path in [mp4, webm, poster]:
+    shutil.copy2(path, public / path.name)
+probe = subprocess.run(['/opt/homebrew/bin/ffprobe', '-v', 'error', '-show_streams', '-show_format', '-of', 'json', str(mp4)], capture_output=True, text=True, check=True)
+metadata = json.loads(probe.stdout)
+metadata['source_frames'] = len(frames)
+metadata['files'] = {p.name: p.stat().st_size for p in [mp4, webm, poster]}
+(dest / 'siege_render_manifest.json').write_text(json.dumps(metadata, indent=2) + '\n')
+print(json.dumps(metadata['files'], indent=2))
