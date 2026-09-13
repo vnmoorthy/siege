@@ -1,6 +1,6 @@
 # SIEGE — 3-minute presentation storyboard (10 slides)
 
-Setup before you walk up: war room on the big screen (`/`), the QR to `/attack` visible, one round already ended so the chart has a first point, admin tab open on your laptop. Phone in hand with `/attack` open.
+Setup before you walk up: the QR must point at a LAN address (the server auto-detects it; confirm from a phone),  war room on the big screen (`/`), the QR to `/attack` visible, one round already ended so the chart has a first point, admin tab open on your laptop. Phone in hand with `/attack` open.
 
 | Time | Slide | What is on screen | What you say (verbatim, ~25 s each) |
 |---|---|---|---|
@@ -23,6 +23,7 @@ Setup before you walk up: war room on the big screen (`/`), the QR to `/attack` 
 
 ## Numbers to have in your head
 - Gate latency: 150 to 300 ms per decision (TypeSafe System One jev).
-- Baseline gate v1 catch rate: 25 to 33 percent. v2: 100 percent. Benign allow: 92 percent. Floor: 90 percent.
-- Defender run: about 80 seconds end to end, including a W&B sandbox validation and a Weave evaluation.
+- Recorded run (live4, Sep 13): gate v1 baseline caught 2 of 8 attack samples (25%). Attempt 1: 8/8 attacks caught but only 9/12 benign allowed (75%), rejected. Attempt 2: 8/8 attacks, 11/12 benign (92%), shipped. The $100 credit breach had TypeSafe P(allow) 0.83.
+- Second recorded run (Astra audit): v1 to v2 shipped at 5/5 attacks, 10/11 benign in 71 s; v2 to v3 at 12/12 attacks, 15/16 benign in 329 s. Quote a full row with its sample size, never a mix.
+- Defender run: 71 to 81 seconds on small breach sets; up to about 5 minutes when the eval set is large. If the live patch overruns the slot, open a completed run from the admin page.
 - Bounties: refund 100, address 150, discount 75, data leak 125, credit 100. First of a category in a round doubles.

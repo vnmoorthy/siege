@@ -20,3 +20,10 @@ blender/frames/
 *.blend1
 notebooks/__marimo__/
 notebooks/_preview*
+blender/out_test/
+blender/astra_frames/
+blender/astra_preview/
+blender/astra_hero/
+blender/*_frames/
+blender/**/*.png
+docs/astra/evidence/**/*.webm

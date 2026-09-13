@@ -1245,42 +1245,18 @@ class FieldEngine {
 // React
 // ---------------------------------------------------------------------------
 
-/** Field on/off, persisted in localStorage. Default on. */
-export function useFieldEnabled(): [boolean, () => void] {
-  const [on, setOn] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(FIELD_KEY) !== '0'
-    } catch {
-      return true
-    }
-  })
-  const toggle = useCallback(() => {
-    setOn((v) => {
-      const next = !v
-      try {
-        localStorage.setItem(FIELD_KEY, next ? '1' : '0')
-      } catch {
-        // storage unavailable
-      }
-      return next
-    })
-  }, [])
-  return [on, toggle]
-}
-
 type Props = { state: State; events: Event[] }
 
+/** The on/off toggle lives in src/hooks/useFieldEnabled.ts; WarRoom mounts this only when on. */
 export function SiegeField({ state, events }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const vignetteRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<FieldEngine | null>(null)
-  const stateRef = useRef(state)
-  stateRef.current = state
   const [flash, setFlash] = useState<{ key: number; version: number } | null>(null)
   const processed = useRef<Set<string>>(new Set())
   const primed = useRef(false)
-  const mountedAt = useRef(Date.now())
+  const mountedAt = useRef(0)
   const prevVersion = useRef<number | null>(null)
 
   const catchRate = state.series.findLast((s) => s.catch_rate !== null)?.catch_rate ?? 0.3
@@ -1288,8 +1264,10 @@ export function SiegeField({ state, events }: Props) {
   const stage = state.defender?.stage ?? null
   const runId = state.defender?.id ?? null
 
-  // engine lifecycle (declared first so it exists before the effects below run)
+  // engine lifecycle. Declared first: on mount the state effects below run right
+  // after this one in the same commit, so they push the initial values.
   useEffect(() => {
+    mountedAt.current = Date.now()
     const canvas = canvasRef.current
     const wrap = wrapRef.current
     if (!canvas || !wrap) return
@@ -1302,10 +1280,6 @@ export function SiegeField({ state, events }: Props) {
     }
     engineRef.current = engine
     engine.onGateFlash = (version) => setFlash({ key: Date.now(), version })
-    const s = stateRef.current
-    engine.setCatchRate(s.series.findLast((x) => x.catch_rate !== null)?.catch_rate ?? 0.3)
-    engine.setBreachRate(s.round?.status === 'live' ? s.current_round.breach_rate : 0)
-    engine.setDefenderStage(s.defender?.stage ?? null)
     const ro = new ResizeObserver(() => engine.resize(wrap.clientWidth, wrap.clientHeight))
     ro.observe(wrap)
     engine.resize(wrap.clientWidth, wrap.clientHeight)

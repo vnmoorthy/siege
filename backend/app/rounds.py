@@ -9,6 +9,24 @@ from .db import Store, now_iso
 from .hub import HUB
 
 
+def public_base_url() -> str:
+    """PUBLIC_BASE_URL if set to a non-localhost origin, else this machine's LAN address so phones can join."""
+    base = CONFIG.public_base_url
+    if "localhost" not in base and "127.0.0.1" not in base:
+        return base
+    import socket
+
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        port = base.rsplit(":", 1)[-1] if base.count(":") >= 2 else "8000"
+        return f"http://{ip}:{port}"
+    except OSError:
+        return base
+
+
 class RoundManager:
     def __init__(self, store: Store, gate, defender):
         self.store = store
@@ -121,5 +139,5 @@ class RoundManager:
             "defender": runs[0] if runs else None,
             "settings": self.settings.to_dict(),
             "providers": providers,
-            "join_url": f"{CONFIG.public_base_url.rstrip('/')}/attack",
+            "join_url": f"{public_base_url().rstrip('/')}/attack",
         }
