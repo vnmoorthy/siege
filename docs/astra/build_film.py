@@ -59,6 +59,7 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--portrait',action='store_true')
     parser.add_argument('--stills',action='store_true',help='Render opening and closing scenes only while Blender runs.')
     parser.add_argument('--reuse-stills',action='store_true',help='Keep opening and closing scenes rendered by --stills.')
+    parser.add_argument('--hardware',action='store_true',help='Use macOS VideoToolbox; requires host encoder access.')
     args=parser.parse_args()
     name='portrait' if args.portrait else 'landscape'
     width,height=(1080,1920) if args.portrait else (1920,1080)
@@ -73,16 +74,18 @@ def main():
             outputs.append(out)
             continue
         use_loop=i in (1,2,3) and loop.exists()
-        media_args=['-stream_loop','-1','-i',str(loop)] if use_loop else ['-loop','1','-framerate','30','-i',str(art)]
-        media_args+=['-loop','1','-framerate','30','-i',str(WORK/f'{name}-{i}.png')]
+        media_args=['-stream_loop','-1','-i',str(loop)] if use_loop else ['-i',str(art)]
+        media_args+=['-i',str(WORK/f'{name}-{i}.png')]
         if args.portrait:
-            base="[0:v]scale=1080:608:force_original_aspect_ratio=increase,crop=1080:608,setsar=1,fps=30,pad=1080:1920:0:755:color=0x07080c[base]"
+            hold='' if use_loop else 'loop=loop=-1:size=1:start=0,'
+            base=f"[0:v]scale=1080:608:force_original_aspect_ratio=increase,crop=1080:608,setsar=1,{hold}fps=30,pad=1080:1920:0:755:color=0x07080c[base]"
         elif use_loop:
             base='[0:v]scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1,fps=30[base]'
         else:
-            base="[0:v]scale=2400:-1,zoompan=z='min(zoom+0.00010,1.08)':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1920x1080:fps=30,setsar=1[base]"
-        filters=base+f';[1:v]format=rgba[title];[base][title]overlay=0:0:shortest=1,fade=t=in:st=0:d=0.35,fade=t=out:st={duration-.25}:d=0.25,format=yuv420p[v]'
-        run([*media_args,'-filter_complex_threads','2','-filter_complex',filters,'-map','[v]','-t',str(duration),'-c:v','libx264','-preset','fast','-crf','19','-threads','4','-an',str(out)])
+            base=f"[0:v]scale=1920:1080,zoompan=z='1+on*0.00010':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d={duration*30}:s=1920x1080:fps=30,setsar=1[base]"
+        filters=base+f';[1:v]format=rgba[title];[base][title]overlay=0:0:eof_action=repeat,fade=t=in:st=0:d=0.35,fade=t=out:st={duration-.25}:d=0.25,format=yuv420p[v]'
+        encoder=['-c:v','h264_videotoolbox','-b:v','6M'] if args.hardware else ['-c:v','libx264','-preset','fast','-crf','19','-threads','4']
+        run([*media_args,'-filter_complex_threads','2','-filter_complex',filters,'-map','[v]','-t',str(duration),*encoder,'-an',str(out)])
         outputs.append(out);print(f'Rendered {name} scene {i+1}/5',flush=True)
     if args.stills:
         return
