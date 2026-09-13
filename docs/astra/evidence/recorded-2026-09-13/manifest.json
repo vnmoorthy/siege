@@ -73,7 +73,17 @@
     {
       "stage": "admin",
       "error": "TimeoutError: page.waitForFunction: Timeout 30000ms exceeded."
+    },
+    {
+      "stage": "desktop_retry /?mock=0",
+      "at": "2026-09-13T19:02:29.182Z",
+      "error": "locator.waitFor: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Leaderboard', { exact: true }).first() to be visible\u001b[22m\n"
+    },
+    {
+      "stage": "desktop_retry /admin?mock=0",
+      "at": "2026-09-13T19:05:32.772Z",
+      "error": "locator.waitFor: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Gate versions', { exact: true }).first() to be visible\u001b[22m\n\u001b[2m    - waiting for \"http://localhost:8000/admin?mock=0\" navigation to finish...\u001b[22m\n\u001b[2m    - navigated to \"http://localhost:8000/admin?mock=0\"\u001b[22m\n"
     }
   ],
-  "capture_ended_at": "2026-09-13T18:54:16.719Z"
+  "capture_ended_at": "2026-09-13T19:05:38.820Z"
 }

@@ -15,6 +15,7 @@ parser.add_argument('--fps', type=int, default=30)
 parser.add_argument('--ffmpeg', default='/opt/homebrew/bin/ffmpeg')
 parser.add_argument('--name', default='siege_loop')
 parser.add_argument('--poster-frame', type=int, default=28)
+parser.add_argument('--interpolate-fps', type=int, default=0, help='Optical-flow interpolate a lower-rate loop to this delivery frame rate.')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 dest = root / 'docs' / 'media'
@@ -33,6 +34,13 @@ def run(*cmd):
 
 common = [args.ffmpeg, '-hide_banner', '-loglevel', 'error', '-y', '-framerate', str(args.fps),
           '-start_number', str(indices[0]), '-i', str(args.frames / 'frame_%04d.png')]
+if args.interpolate_fps:
+    # Feed wrapped poses for optical-flow lookahead; bound output explicitly.
+    common = [args.ffmpeg, '-hide_banner', '-loglevel', 'error', '-y', '-stream_loop', '-1',
+              '-framerate', str(args.fps), '-start_number', str(indices[0]), '-i',
+              str(args.frames / 'frame_%04d.png'), '-vf',
+              f'minterpolate=fps={args.interpolate_fps}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1',
+              '-frames:v', str(round(len(frames) / args.fps * args.interpolate_fps))]
 mp4 = dest / f'{args.name}.mp4'
 webm = dest / f'{args.name}.webm'
 run(*common, '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', mp4)
@@ -47,6 +55,8 @@ for path in [mp4, webm, poster]:
 probe = subprocess.run(['/opt/homebrew/bin/ffprobe', '-v', 'error', '-show_streams', '-show_format', '-of', 'json', str(mp4)], capture_output=True, text=True, check=True)
 metadata = json.loads(probe.stdout)
 metadata['source_frames'] = len(frames)
+metadata['source_fps'] = args.fps
+metadata['optical_flow_fps'] = args.interpolate_fps or None
 metadata['files'] = {p.name: p.stat().st_size for p in [mp4, webm, poster]}
 (dest / 'siege_render_manifest.json').write_text(json.dumps(metadata, indent=2) + '\n')
 print(json.dumps(metadata['files'], indent=2))
