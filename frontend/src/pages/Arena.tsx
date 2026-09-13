@@ -4,7 +4,7 @@ import { ArrowUpRight, Pause, Play, Radio, ScanLine, ShieldCheck, Swords } from 
 import { QRCodeSVG } from 'qrcode.react'
 import { useSiege } from '../hooks/useSiege'
 import { api } from '../api'
-import { href, isMockActive } from '../lib/mockFlag'
+import { href, isMockActive, joinHref } from '../lib/mockFlag'
 import type { GateVersion } from '../types'
 import './Arena.css'
 
@@ -38,7 +38,7 @@ export default function Arena() {
   const defender = state?.defender
   const stage = defender && !defender.ended_at ? defender.stage : 'idle'
   const roundLabel = state?.round?.status === 'live' ? `ROUND ${String(state.round.number).padStart(2, '0')} · LIVE` : state ? 'BETWEEN ROUNDS' : 'CONNECTING'
-  const join = state?.join_url
+  const join = state ? joinHref(state.join_url) : undefined
   const story = `${import.meta.env.BASE_URL}story/index.html${mode === 'mock' ? '?mock=1' : ''}`
   return <main className={`siege-arena ${activeEvent?.type === 'breach' ? 'siege-arena-breach' : ''}`}>
     <div className="arena-art" aria-hidden="true">

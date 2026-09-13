@@ -1,0 +1,119 @@
+{
+  "started_at": "2026-09-13T20:12:09.735695+00:00",
+  "old_pid": 60704,
+  "database": "/Users/moorthy/Downloads/Projects/Marimo/siege/backend/data/siege.db",
+  "before": {
+    "mode": "live",
+    "gate_version": 1,
+    "totals": {
+      "attacks": 0,
+      "breaches": 0,
+      "blocks": 0,
+      "benign_blocks": 0,
+      "attackers": 0,
+      "online": 0
+    },
+    "round": null,
+    "defender": null,
+    "settings": {
+      "round_seconds": 90,
+      "auto_defend": true,
+      "benign_floor": 0.9,
+      "max_attempts": 3,
+      "variants_per_breach": 4
+    },
+    "providers": {
+      "agent": {
+        "provider": "wandb-inference",
+        "model": "openai/gpt-oss-20b",
+        "live": true
+      },
+      "defender": {
+        "provider": "wandb-inference",
+        "model": "deepseek-ai/DeepSeek-V4-Pro",
+        "live": true
+      },
+      "redteam": {
+        "provider": "wandb-inference",
+        "model": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B",
+        "live": true
+      },
+      "gate": {
+        "provider": "typesafe",
+        "model": "jev-latest",
+        "live": true
+      },
+      "weave": {
+        "live": true,
+        "project": "siege",
+        "url": "https://wandb.ai/vnmoorthy-amperes-ai/siege/weave"
+      },
+      "sandbox": {
+        "provider": "wandb",
+        "live": true
+      }
+    },
+    "join_url": "http://10.20.7.5:8000/attack"
+  },
+  "action": "Graceful SIGTERM and same Uvicorn command/database; no reset or API POST",
+  "new_pid": 70076,
+  "log": "/private/tmp/siege-backend-runtime.log",
+  "after": {
+    "mode": "live",
+    "gate_version": 1,
+    "totals": {
+      "attacks": 0,
+      "breaches": 0,
+      "blocks": 0,
+      "benign_blocks": 0,
+      "attackers": 0,
+      "online": 0
+    },
+    "round": null,
+    "defender": null,
+    "settings": {
+      "round_seconds": 90,
+      "auto_defend": true,
+      "benign_floor": 0.9,
+      "max_attempts": 3,
+      "variants_per_breach": 4
+    },
+    "providers": {
+      "agent": {
+        "provider": "wandb-inference",
+        "model": "openai/gpt-oss-20b",
+        "live": true
+      },
+      "defender": {
+        "provider": "wandb-inference",
+        "model": "deepseek-ai/DeepSeek-V4-Pro",
+        "live": true
+      },
+      "redteam": {
+        "provider": "wandb-inference",
+        "model": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B",
+        "live": true
+      },
+      "gate": {
+        "provider": "typesafe",
+        "model": "jev-latest",
+        "live": true
+      },
+      "weave": {
+        "live": true,
+        "project": "siege",
+        "url": "https://wandb.ai/vnmoorthy-amperes-ai/siege/weave"
+      },
+      "sandbox": {
+        "provider": "wandb",
+        "live": true
+      }
+    },
+    "join_url": "http://10.20.7.5:8000/attack"
+  },
+  "totals_preserved": true,
+  "settings_preserved": true,
+  "gate_preserved": true,
+  "providers_preserved": true,
+  "completed_at": "2026-09-13T20:12:14.001327+00:00"
+}

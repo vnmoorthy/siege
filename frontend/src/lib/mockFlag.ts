@@ -31,6 +31,13 @@ export function isMockActive(): boolean {
 
 /** Build an in-app href that preserves ?mock=1 so client-side navigation stays in mock mode. */
 export function href(path: string): string {
-  if (!isMockActive()) return path
-  return path.includes('?') ? `${path}&mock=1` : `${path}?mock=1`
+  const mode = isMockActive() ? '1' : '0'
+  return path.includes('?') ? `${path}&mock=${mode}` : `${path}?mock=${mode}`
+}
+
+/** A returning phone must explicitly leave its earlier browser simulation. */
+export function joinHref(url: string): string {
+  const target = new URL(url, window.location.origin)
+  target.searchParams.set('mock', isMockActive() ? '1' : '0')
+  return target.href
 }

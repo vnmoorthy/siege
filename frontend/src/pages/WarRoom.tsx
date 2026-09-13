@@ -20,7 +20,7 @@ import { Stat } from '../components/Stat'
 import { useFieldEnabled } from '../hooks/useFieldEnabled'
 import { useSiege } from '../hooks/useSiege'
 import { COLORS, categoryLabel, int, pct } from '../lib/format'
-import { href, isMockActive } from '../lib/mockFlag'
+import { href, isMockActive, joinHref } from '../lib/mockFlag'
 import type { GateVersion, LeaderRow, State } from '../types'
 
 // ---------------------------------------------------------------------------
@@ -413,6 +413,7 @@ export default function WarRoom() {
   const gate = useGateVersion(state?.gate_version)
   const [fieldOn, toggleField] = useFieldEnabled()
   const simulated = isMockActive()
+  const joinUrl = state ? joinHref(state.join_url) : ''
   const [includeBots, setIncludeBots] = useState(false)
   const feed = useMemo(() => events.filter(event => simulated || includeBots || event.data?.synthetic !== true).slice(0, 60), [events, simulated, includeBots])
   const round = state?.round ?? null
@@ -486,11 +487,11 @@ export default function WarRoom() {
           </div>
         </div>
         <div className="flex items-center gap-3 rounded-lg border border-white/[0.08] bg-white p-1.5">
-          <QRCodeSVG value={state.join_url} size={72} bgColor="#ffffff" fgColor="#07080c" level="M" />
+          <QRCodeSVG value={joinUrl} size={72} bgColor="#ffffff" fgColor="#07080c" level="M" />
         </div>
         <div className="w-44">
           <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fg">{simulated ? 'Try the simulator' : 'Join the siege'}</div>
-          <div className="num mt-1 break-all text-[11px] leading-snug text-fg-2">{state.join_url.replace(/^https?:\/\//, '')}</div>
+          <div className="num mt-1 break-all text-[11px] leading-snug text-fg-2">{joinUrl.replace(/^https?:\/\//, '')}</div>
           <div className="num mt-1 text-[11px] text-fg-3">
             {state.totals.online} online · {state.totals.attackers} joined
           </div>

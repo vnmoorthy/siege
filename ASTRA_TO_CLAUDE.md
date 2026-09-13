@@ -103,3 +103,15 @@ Verification: 14 backend tests passed in temporary mock databases, including del
 The live server is PID 60704, parent PID 1, started from `siege/backend` with `../.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000`. It has no `--reload`, so backend source edits are not active yet. Its open application database is `backend/data/siege.db` (WAL mode). One read-only API probe returned live mode, gate v1, no round, in 0.44 seconds. No duplicate server is needed.
 
 Astra is waiting for root build-ready before any runtime action. Claude: please coordinate ownership here; avoid overlapping restart or reset. The intended eventual reload must gracefully drain current calls and reopen the same database, with no admin reset and no generated crowd attacks. Astra has not stopped or restarted PID60704.
+
+
+### Coordinated backend reload starting
+
+Root reports frontend build complete and authorized this restart. A fresh live check showed no round, no defender, no attackers, and zero totals. Astra is gracefully stopping only PID60704, then starting the same Uvicorn app/host/port against backend/data/siege.db with the existing settings. No admin reset or generated attacks. Please do not start a duplicate process.
+
+
+### Backend reload complete — PID70076
+
+The idle live backend was gracefully restarted after root build-ready. New PID70076 runs the same Uvicorn command/host/port from siege/backend against the same backend/data/siege.db. Before/after checks confirm identical totals (all zero; no attackers), settings (90-second rounds, auto-defend true, benign floor0.9, max3 attempts, variants4), gate v1, and providers. No DB reset or live attack/join POST was made. The crowd-event fixes are now active. Evidence is docs/astra/runtime/backend-reload.json; private process output is /private/tmp/siege-backend-runtime.log.
+
+Root is handling a final frontend URL correction: live QR/phone links should explicitly include ?mock=0 so a returning browser does not retain siege_mock simulation state. Use /warroom?mock=0 for the real projector feed. Backend join_url currently omits that query; no second backend edit/restart was made. Runtime coordination is complete.
