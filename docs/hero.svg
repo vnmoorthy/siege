@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="640" viewBox="0 0 1600 640" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <title>SIEGE</title>
+  <defs>
+    <radialGradient id="glow-red" gradientUnits="userSpaceOnUse" cx="380" cy="250" r="520">
+      <stop offset="0" stop-color="#ff3b5c" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#ff3b5c" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow-violet" gradientUnits="userSpaceOnUse" cx="1240" cy="330" r="520">
+      <stop offset="0" stop-color="#a78bfa" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#a78bfa" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fill-red" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff3b5c" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ff3b5c" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="fill-green" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22c55e" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#22c55e" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="1600" height="640" fill="#07080c"/>
+  <rect width="1600" height="640" fill="url(#glow-red)"/>
+  <rect width="1600" height="640" fill="url(#glow-violet)"/>
+
+  <!-- faint grid -->
+  <g stroke="#ffffff" stroke-opacity="0.035" stroke-width="1">
+    <path d="M0,80 H1600 M0,160 H1600 M0,240 H1600 M0,320 H1600 M0,400 H1600 M0,480 H1600 M0,560 H1600"/>
+    <path d="M80,0 V640 M160,0 V640 M240,0 V640 M320,0 V640 M400,0 V640 M480,0 V640 M560,0 V640 M640,0 V640 M720,0 V640 M800,0 V640 M880,0 V640 M960,0 V640 M1040,0 V640 M1120,0 V640 M1200,0 V640 M1280,0 V640 M1360,0 V640 M1440,0 V640 M1520,0 V640"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="76" y="290" font-size="200" font-weight="800" letter-spacing="10" fill="#e6e8ef">SIEGE</text>
+  <rect x="80" y="308" width="120" height="6" rx="3" fill="#ff3b5c"/>
+  <rect x="208" y="308" width="40" height="6" rx="3" fill="#ffb020"/>
+  <rect x="256" y="308" width="40" height="6" rx="3" fill="#22c55e"/>
+
+  <!-- subtitle -->
+  <text x="80" y="366" font-size="34" font-weight="500" fill="#e6e8ef">200 people vs one agent. The gate learns.</text>
+  <text x="80" y="408" font-size="20" fill="#8b90a0">A live customer-support agent with real tools. Every breach is exact.</text>
+  <text x="80" y="436" font-size="20" fill="#8b90a0">A defender loop rewrites the typed action gate every round.</text>
+
+  <!-- chips -->
+  <rect x="80" y="520" width="210" height="40" rx="20" fill="#0f1117" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="185" y="546" font-size="18" fill="#e6e8ef" text-anchor="middle">TypeSafe System One</text>
+  <rect x="304" y="520" width="130" height="40" rx="20" fill="#0f1117" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="369" y="546" font-size="18" fill="#e6e8ef" text-anchor="middle">W&amp;B Weave</text>
+  <rect x="448" y="520" width="216" height="40" rx="20" fill="#0f1117" stroke="#ffb020" stroke-width="1.5"/>
+  <text x="556" y="546" font-size="18" fill="#e6e8ef" text-anchor="middle">CoreWeave Sandboxes</text>
+  <rect x="678" y="520" width="160" height="40" rx="20" fill="#0f1117" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="758" y="546" font-size="18" fill="#e6e8ef" text-anchor="middle">W&amp;B Inference</text>
+
+  <!-- footer -->
+  <text x="80" y="602" font-size="16" fill="#8b90a0">CoreWeave Hacks: Agent Loops, San Francisco, Sep 13-14 2026</text>
+
+  <!-- ===================== chart panel ===================== -->
+  <rect x="900" y="80" width="640" height="480" rx="16" fill="#0f1117" stroke="#262a35" stroke-width="1.5"/>
+  <text x="960" y="114" font-size="14" fill="#8b90a0">per round: breach rate on the wall vs gate catch rate</text>
+
+  <!-- axes and gridlines: plot x 960..1500, y 130 (100%) .. 470 (0%) -->
+  <g stroke="#262a35" stroke-width="1">
+    <path d="M960,130 H1500 M960,300 H1500 M960,470 H1500"/>
+  </g>
+  <text x="948" y="135" font-size="14" fill="#8b90a0" text-anchor="end">100%</text>
+  <text x="948" y="305" font-size="14" fill="#8b90a0" text-anchor="end">50%</text>
+  <text x="948" y="475" font-size="14" fill="#8b90a0" text-anchor="end">0%</text>
+  <text x="960" y="496" font-size="14" fill="#8b90a0" text-anchor="middle">round 1</text>
+  <text x="1095" y="496" font-size="14" fill="#8b90a0" text-anchor="middle">round 2</text>
+  <text x="1230" y="496" font-size="14" fill="#8b90a0" text-anchor="middle">round 3</text>
+  <text x="1365" y="496" font-size="14" fill="#8b90a0" text-anchor="middle">round 4</text>
+  <text x="1500" y="496" font-size="14" fill="#8b90a0" text-anchor="middle">round 5</text>
+
+  <!-- benign allow floor (amber, dashed) at 90% -> y = 164 -->
+  <path d="M960,164 H1500" stroke="#ffb020" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.9"/>
+  <text x="1496" y="181" font-size="14" fill="#ffb020" text-anchor="end">benign allow floor 90%</text>
+
+  <!-- gate v2 shipped marker (violet, dashed) at round 2 -->
+  <path d="M1095,130 V470" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <text x="1103" y="150" font-size="14" fill="#a78bfa">gate v2 shipped</text>
+
+  <!-- breach rate (red): falls -->
+  <path d="M960,242 C1030,242 1040,368 1095,368 C1150,368 1170,443 1230,443 C1280,443 1310,468 1365,470 L1500,470 L1500,470 L960,470 Z" fill="url(#fill-red)"/>
+  <path d="M960,242 C1030,242 1040,368 1095,368 C1150,368 1170,443 1230,443 C1280,443 1310,468 1365,470 L1500,470" fill="none" stroke="#ff3b5c" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="960" cy="242" r="6" fill="#ff3b5c"/>
+  <circle cx="1095" cy="368" r="6" fill="#ff3b5c"/>
+  <circle cx="1230" cy="443" r="6" fill="#ff3b5c"/>
+  <circle cx="1365" cy="470" r="6" fill="#ff3b5c"/>
+  <circle cx="1500" cy="470" r="6" fill="#ff3b5c"/>
+  <text x="1496" y="458" font-size="14" fill="#ff3b5c" text-anchor="end" font-weight="700">breach rate to 0</text>
+
+  <!-- catch rate (emerald): rises -->
+  <path d="M960,358 C1020,358 1040,130 1095,130 L1500,130 L1500,470 L960,470 Z" fill="url(#fill-green)" opacity="0.5"/>
+  <path d="M960,358 C1020,358 1040,130 1095,130 L1500,130" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="960" cy="358" r="6" fill="#22c55e"/>
+  <circle cx="1095" cy="130" r="6" fill="#22c55e"/>
+  <circle cx="1230" cy="130" r="6" fill="#22c55e"/>
+  <circle cx="1365" cy="130" r="6" fill="#22c55e"/>
+  <circle cx="1500" cy="130" r="6" fill="#22c55e"/>
+  <text x="1496" y="122" font-size="14" fill="#22c55e" text-anchor="end" font-weight="700">catch rate 33% to 100%</text>
+
+  <!-- legend -->
+  <rect x="960" y="528" width="14" height="14" rx="3" fill="#ff3b5c"/>
+  <text x="982" y="540" font-size="14" fill="#e6e8ef">breach rate</text>
+  <rect x="1080" y="528" width="14" height="14" rx="3" fill="#22c55e"/>
+  <text x="1102" y="540" font-size="14" fill="#e6e8ef">gate catch rate</text>
+  <path d="M1230,535 H1252" stroke="#ffb020" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="1260" y="540" font-size="14" fill="#e6e8ef">benign floor</text>
+  <path d="M1372,535 H1394" stroke="#a78bfa" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="1402" y="540" font-size="14" fill="#e6e8ef">gate shipped</text>
+</svg>

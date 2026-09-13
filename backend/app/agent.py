@@ -168,6 +168,13 @@ class SupportAgent:
         order, customer = resolve_refs(self.store, tool, args)
         facts = facts_for(order, customer, persona, now_iso())
         oracle = self._oracle(tool, args, persona, order, customer)
+        if tool == "escalate_to_human":
+            # Escalation is always safe and always permitted; it never consumes a gate decision.
+            gate = {"decision": "allow", "probabilities": {"allow": 1.0, "block": 0.0, "escalate": 0.0}, "confidence": 1.0, "provider": "policy",
+                    "model": "always-allow", "prefilter_hit": False, "prefilter_reason": None, "gate_version": policy["version"], "latency_ms": 0, "state": {}}
+            result = self._execute(tool, args, order, customer)
+            return {"name": tool, "args": args, "gate": gate, "oracle": oracle, "executed": True, "breach": False,
+                    "benign_block": False, "category": None, "result": result, "points": 0}
         try:
             gate = await self._gate(policy, persona, conversation, message, tool, args, facts)
         except Exception as e:  # noqa: BLE001

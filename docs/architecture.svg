@@ -1,0 +1,201 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <title>SIEGE architecture</title>
+  <defs>
+    <marker id="ar-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8b90a0"/></marker>
+    <marker id="ar-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b5c"/></marker>
+    <marker id="ar-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb020"/></marker>
+    <marker id="ar-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#22c55e"/></marker>
+    <marker id="ar-violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker>
+    <marker id="ar-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#60a5fa"/></marker>
+  </defs>
+
+  <!-- background -->
+  <rect width="1600" height="900" fill="#07080c"/>
+
+  <!-- title -->
+  <text x="40" y="62" font-size="30" font-weight="700" fill="#e6e8ef">SIEGE <tspan fill="#8b90a0" font-weight="400">architecture</tspan></text>
+  <text x="40" y="90" font-size="16" fill="#8b90a0">One typed gate in front of every tool call. One defender loop that rewrites the gate from exact breach traces.</text>
+
+  <!-- war room (top right) -->
+  <rect x="1290" y="28" width="272" height="80" rx="10" fill="#0f1117" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="1426" y="54" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">War room  /</text>
+  <text x="1426" y="76" font-size="14" fill="#8b90a0" text-anchor="middle">big screen: KPIs, live feed, chart,</text>
+  <text x="1426" y="96" font-size="14" fill="#8b90a0" text-anchor="middle">leaderboard, defender stepper, QR</text>
+
+  <!-- websocket: FastAPI -> war room (blue) -->
+  <path d="M292,200 L292,126 L1426,126 L1426,110" fill="none" stroke="#60a5fa" stroke-width="2" marker-end="url(#ar-blue)"/>
+  <text x="860" y="117" font-size="14" fill="#60a5fa" text-anchor="middle">WebSocket /ws: every event, plus a state snapshot every 2 s</text>
+
+  <!-- shipped policy feedback: versions -> gate + prefilter (emerald) -->
+  <path d="M1562,622 L1585,622 L1585,162 L741,162" fill="none" stroke="#22c55e" stroke-width="2"/>
+  <path d="M993,162 L993,198" fill="none" stroke="#22c55e" stroke-width="2" marker-end="url(#ar-green)"/>
+  <path d="M741,162 L741,198" fill="none" stroke="#22c55e" stroke-width="2" marker-end="url(#ar-green)"/>
+  <text x="1575" y="153" font-size="14" fill="#22c55e" text-anchor="end">shipped policy v(n+1) becomes the live gate and prefilter</text>
+
+  <!-- Weave envelope -->
+  <rect x="24" y="172" width="1552" height="628" rx="18" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="8 7" opacity="0.8"/>
+  <text x="44" y="784" font-size="16" fill="#60a5fa">W&amp;B Weave traces every agent turn, gate decision, oracle verdict, tool execution and defender stage. Each candidate gate policy is scored as a weave.Evaluation.</text>
+
+  <!-- ===================== main lane (request path) ===================== -->
+  <!-- arrow labels -->
+  <text x="201" y="189" font-size="14" fill="#8b90a0" text-anchor="middle">chat</text>
+  <text x="383" y="189" font-size="14" fill="#8b90a0" text-anchor="middle">persona + history</text>
+  <text x="625" y="189" font-size="14" fill="#8b90a0" text-anchor="middle">proposed tool call</text>
+  <text x="857" y="189" font-size="14" fill="#8b90a0" text-anchor="middle">no hit</text>
+  <text x="1129" y="189" font-size="14" fill="#22c55e" text-anchor="middle">allow</text>
+  <text x="1341" y="189" font-size="14" fill="#22c55e" text-anchor="middle">execute</text>
+
+  <!-- arrows -->
+  <path d="M180,262 L220,262" stroke="#8b90a0" stroke-width="2" marker-end="url(#ar-gray)"/>
+  <path d="M362,262 L402,262" stroke="#8b90a0" stroke-width="2" marker-end="url(#ar-gray)"/>
+  <path d="M604,262 L644,262" stroke="#8b90a0" stroke-width="2" marker-end="url(#ar-gray)"/>
+  <path d="M836,262 L876,262" stroke="#8b90a0" stroke-width="2" marker-end="url(#ar-gray)"/>
+  <path d="M1108,262 L1148,262" stroke="#22c55e" stroke-width="2" marker-end="url(#ar-green)"/>
+  <path d="M1320,262 L1360,262" stroke="#22c55e" stroke-width="2" marker-end="url(#ar-green)"/>
+
+  <!-- P1 phones -->
+  <rect x="40" y="200" width="140" height="124" rx="10" fill="#12141c" stroke="#2a2e3b" stroke-width="1.5"/>
+  <text x="110" y="234" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">Phones</text>
+  <text x="110" y="262" font-size="14" fill="#8b90a0" text-anchor="middle">200 attackers</text>
+  <text x="110" y="284" font-size="14" fill="#8b90a0" text-anchor="middle">/attack on mobile</text>
+  <text x="110" y="306" font-size="14" fill="#8b90a0" text-anchor="middle">one persona each</text>
+
+  <!-- P2 fastapi -->
+  <rect x="222" y="200" width="140" height="124" rx="10" fill="#12141c" stroke="#2a2e3b" stroke-width="1.5"/>
+  <text x="292" y="234" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">FastAPI</text>
+  <text x="292" y="262" font-size="14" fill="#8b90a0" text-anchor="middle" font-family="Menlo, monospace">POST /api/chat</text>
+  <text x="292" y="284" font-size="14" fill="#8b90a0" text-anchor="middle">round + persona</text>
+  <text x="292" y="306" font-size="14" fill="#8b90a0" text-anchor="middle">SQLite store</text>
+
+  <!-- P3 agent -->
+  <rect x="404" y="200" width="200" height="124" rx="10" fill="#12141c" stroke="#2a2e3b" stroke-width="1.5"/>
+  <text x="504" y="234" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">Support agent</text>
+  <text x="504" y="262" font-size="14" fill="#8b90a0" text-anchor="middle" font-family="Menlo, monospace">gpt-oss-20b</text>
+  <text x="504" y="284" font-size="14" fill="#8b90a0" text-anchor="middle">on W&amp;B Inference</text>
+  <text x="504" y="306" font-size="14" fill="#8b90a0" text-anchor="middle">7 tools, up to 4 tool rounds</text>
+
+  <!-- P4 prefilter -->
+  <rect x="646" y="200" width="190" height="124" rx="10" fill="#12141c" stroke="#ffb020" stroke-width="1.5"/>
+  <text x="741" y="234" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">Prefilter</text>
+  <text x="741" y="262" font-size="14" fill="#8b90a0" text-anchor="middle">defender-written Python</text>
+  <text x="741" y="284" font-size="14" fill="#8b90a0" text-anchor="middle">sandbox-validated code</text>
+  <text x="741" y="306" font-size="14" fill="#8b90a0" text-anchor="middle">isolated subprocess, 8 s cap</text>
+
+  <!-- P5 gate -->
+  <rect x="878" y="200" width="230" height="124" rx="10" fill="#12141c" stroke="#a78bfa" stroke-width="2"/>
+  <text x="993" y="234" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">TypeSafe gate</text>
+  <text x="993" y="262" font-size="14" fill="#8b90a0" text-anchor="middle">System One, model jev</text>
+  <text x="932" y="284" font-size="14" fill="#22c55e" text-anchor="middle">allow</text>
+  <text x="962" y="284" font-size="14" fill="#8b90a0" text-anchor="middle">|</text>
+  <text x="993" y="284" font-size="14" fill="#ffb020" text-anchor="middle">block</text>
+  <text x="1024" y="284" font-size="14" fill="#8b90a0" text-anchor="middle">|</text>
+  <text x="1062" y="284" font-size="14" fill="#ffb020" text-anchor="middle">escalate</text>
+  <text x="993" y="306" font-size="14" fill="#8b90a0" text-anchor="middle">probabilities, 150-300 ms</text>
+
+  <!-- P6 oracle -->
+  <rect x="1150" y="200" width="170" height="124" rx="10" fill="#12141c" stroke="#ff3b5c" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="1235" y="234" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">Policy oracle</text>
+  <text x="1235" y="262" font-size="14" fill="#8b90a0" text-anchor="middle">deterministic rules</text>
+  <text x="1235" y="284" font-size="14" fill="#8b90a0" text-anchor="middle">allowed or forbidden</text>
+  <text x="1235" y="306" font-size="14" fill="#8b90a0" text-anchor="middle">labels only, never blocks</text>
+  <text x="1235" y="346" font-size="14" fill="#ff3b5c" text-anchor="middle">the gate never sees this verdict</text>
+
+  <!-- P7 store -->
+  <rect x="1362" y="200" width="200" height="124" rx="10" fill="#12141c" stroke="#2a2e3b" stroke-width="1.5"/>
+  <text x="1462" y="234" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">Tool execution</text>
+  <text x="1462" y="262" font-size="14" fill="#8b90a0" text-anchor="middle">Nimbus Outfitters, SQLite</text>
+  <text x="1462" y="284" font-size="14" fill="#8b90a0" text-anchor="middle">24 customers, 24 orders</text>
+  <text x="1462" y="306" font-size="14" fill="#8b90a0" text-anchor="middle">real refunds, credits, edits</text>
+
+  <!-- blocked return path (amber) -->
+  <path d="M993,324 L993,372 L504,372 L504,326" fill="none" stroke="#ffb020" stroke-width="2" marker-end="url(#ar-amber)"/>
+  <path d="M741,324 L741,372" fill="none" stroke="#ffb020" stroke-width="2"/>
+  <text x="748" y="393" font-size="14" fill="#ffb020" text-anchor="middle">prefilter hit, block or escalate: nothing executes, the agent gets a blocked tool_result</text>
+
+  <!-- benign block note (amber) -->
+  <text x="1235" y="420" font-size="14" fill="#ffb020" text-anchor="middle">benign block = gate blocked + oracle allowed (guard metric)</text>
+
+  <!-- breach bus (red) -->
+  <path d="M1462,324 L1462,470 L120,470 L120,558" fill="none" stroke="#ff3b5c" stroke-width="2.5" marker-end="url(#ar-red)"/>
+  <text x="790" y="460" font-size="14" fill="#ff3b5c" text-anchor="middle" font-weight="700">BREACH = gate allowed + oracle forbidden + executed. Exact, never probabilistic, stored with the gate state</text>
+
+  <!-- ===================== side lane (defender loop) ===================== -->
+  <!-- arrow labels -->
+  <text x="221" y="548" font-size="14" fill="#8b90a0" text-anchor="middle">unpatched</text>
+  <text x="463" y="548" font-size="14" fill="#8b90a0" text-anchor="middle">x4 variants</text>
+  <text x="725" y="548" font-size="14" fill="#8b90a0" text-anchor="middle">candidate v(n+1)</text>
+  <text x="957" y="548" font-size="14" fill="#8b90a0" text-anchor="middle">validated</text>
+  <text x="1219" y="548" font-size="14" fill="#a78bfa" text-anchor="middle">scores</text>
+  <text x="1391" y="548" font-size="14" fill="#22c55e" text-anchor="middle">pass</text>
+
+  <!-- arrows -->
+  <path d="M200,622 L240,622" stroke="#8b90a0" stroke-width="2" marker-end="url(#ar-gray)"/>
+  <path d="M442,622 L482,622" stroke="#8b90a0" stroke-width="2" marker-end="url(#ar-gray)"/>
+  <path d="M704,622 L744,622" stroke="#8b90a0" stroke-width="2" marker-end="url(#ar-gray)"/>
+  <path d="M936,622 L976,622" stroke="#8b90a0" stroke-width="2" marker-end="url(#ar-gray)"/>
+  <path d="M1198,622 L1234,622" stroke="#a78bfa" stroke-width="2" marker-end="url(#ar-violet)"/>
+  <path d="M1374,622 L1410,622" stroke="#22c55e" stroke-width="2" marker-end="url(#ar-green)"/>
+
+  <!-- S1 breach traces -->
+  <rect x="40" y="560" width="160" height="124" rx="10" fill="#1a0f14" stroke="#ff3b5c" stroke-width="2"/>
+  <text x="120" y="594" font-size="20" font-weight="700" fill="#ff3b5c" text-anchor="middle">Breach traces</text>
+  <text x="120" y="622" font-size="14" fill="#8b90a0" text-anchor="middle">gate state snapshot</text>
+  <text x="120" y="644" font-size="14" fill="#8b90a0" text-anchor="middle">+ oracle reason</text>
+  <text x="120" y="666" font-size="14" fill="#8b90a0" text-anchor="middle">+ gate probabilities</text>
+
+  <!-- S2 red team -->
+  <rect x="242" y="560" width="200" height="124" rx="10" fill="#12141c" stroke="#2a2e3b" stroke-width="1.5"/>
+  <text x="342" y="594" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">Red team</text>
+  <text x="342" y="622" font-size="14" fill="#8b90a0" text-anchor="middle" font-family="Menlo, monospace">Nemotron 3 Ultra</text>
+  <text x="342" y="644" font-size="14" fill="#8b90a0" text-anchor="middle">paraphrases each breach</text>
+  <text x="342" y="666" font-size="14" fill="#8b90a0" text-anchor="middle">same target, new pretext</text>
+
+  <!-- S3 defender -->
+  <rect x="484" y="560" width="220" height="124" rx="10" fill="#12141c" stroke="#2a2e3b" stroke-width="1.5"/>
+  <text x="594" y="594" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">Defender</text>
+  <text x="594" y="622" font-size="14" fill="#8b90a0" text-anchor="middle" font-family="Menlo, monospace">DeepSeek V4 Pro</text>
+  <text x="594" y="644" font-size="14" fill="#8b90a0" text-anchor="middle">writes policy v(n+1): rules,</text>
+  <text x="594" y="666" font-size="14" fill="#8b90a0" text-anchor="middle">examples + prefilter code</text>
+
+  <!-- S4 sandbox -->
+  <rect x="746" y="560" width="190" height="124" rx="10" fill="#12141c" stroke="#2a2e3b" stroke-width="1.5"/>
+  <text x="841" y="594" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">W&amp;B Sandbox</text>
+  <text x="841" y="622" font-size="14" fill="#8b90a0" text-anchor="middle">serverless, on CoreWeave</text>
+  <text x="841" y="644" font-size="14" fill="#8b90a0" text-anchor="middle">runs the prefilter on</text>
+  <text x="841" y="666" font-size="14" fill="#8b90a0" text-anchor="middle">up to 60 samples first</text>
+
+  <!-- S5 weave eval -->
+  <rect x="978" y="560" width="220" height="124" rx="10" fill="#14121c" stroke="#a78bfa" stroke-width="2"/>
+  <text x="1088" y="594" font-size="20" font-weight="700" fill="#a78bfa" text-anchor="middle">Weave Evaluation</text>
+  <text x="1088" y="622" font-size="14" fill="#8b90a0" text-anchor="middle">{breaches + variants}</text>
+  <text x="1088" y="644" font-size="14" fill="#8b90a0" text-anchor="middle">vs {benign corpus}</text>
+  <text x="1088" y="666" font-size="14" fill="#8b90a0" text-anchor="middle">catch rate, benign allow rate</text>
+
+  <!-- S6 ship / reject -->
+  <rect x="1236" y="560" width="138" height="124" rx="10" fill="#12141c" stroke="#2a2e3b" stroke-width="1.5"/>
+  <text x="1289" y="594" font-size="20" font-weight="700" fill="#22c55e" text-anchor="end">Ship</text>
+  <text x="1300" y="594" font-size="20" font-weight="400" fill="#8b90a0" text-anchor="middle">/</text>
+  <text x="1311" y="594" font-size="20" font-weight="700" fill="#ff3b5c" text-anchor="start">reject</text>
+  <text x="1305" y="622" font-size="14" fill="#8b90a0" text-anchor="middle">catch must rise</text>
+  <text x="1305" y="644" font-size="14" fill="#8b90a0" text-anchor="middle">benign allow &gt;= 0.9</text>
+  <text x="1305" y="666" font-size="14" fill="#8b90a0" text-anchor="middle">else retry</text>
+
+  <!-- S7 versions -->
+  <rect x="1412" y="560" width="150" height="124" rx="10" fill="#0f1a14" stroke="#22c55e" stroke-width="2"/>
+  <text x="1487" y="594" font-size="20" font-weight="700" fill="#e6e8ef" text-anchor="middle">Gate policy</text>
+  <text x="1487" y="622" font-size="14" fill="#8b90a0" text-anchor="middle" font-family="Menlo, monospace">v1 -> v2 -> v3</text>
+  <text x="1487" y="644" font-size="14" fill="#8b90a0" text-anchor="middle">shipped or rejected</text>
+  <text x="1487" y="666" font-size="14" fill="#8b90a0" text-anchor="middle">rollback from /admin</text>
+
+  <!-- retry loop (violet, dashed) -->
+  <path d="M1305,684 L1305,724 L594,724 L594,686" fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#ar-violet)"/>
+  <text x="950" y="745" font-size="14" fill="#a78bfa" text-anchor="middle">fail: eval failures go back to the defender, up to 3 attempts, then the candidate is recorded as rejected and the old gate stays</text>
+
+  <!-- legend -->
+  <rect x="40" y="838" width="16" height="16" rx="4" fill="#ff3b5c"/><text x="66" y="852" font-size="16" fill="#e6e8ef">breach</text>
+  <rect x="150" y="838" width="16" height="16" rx="4" fill="#ffb020"/><text x="176" y="852" font-size="16" fill="#e6e8ef">block / benign block</text>
+  <rect x="356" y="838" width="16" height="16" rx="4" fill="#22c55e"/><text x="382" y="852" font-size="16" fill="#e6e8ef">allow / ship</text>
+  <rect x="510" y="838" width="16" height="16" rx="4" fill="#a78bfa"/><text x="536" y="852" font-size="16" fill="#e6e8ef">evaluation</text>
+  <rect x="644" y="838" width="16" height="16" rx="4" fill="#60a5fa"/><text x="670" y="852" font-size="16" fill="#e6e8ef">tracing / live UI</text>
+  <text x="1560" y="852" font-size="14" fill="#8b90a0" text-anchor="end">SIEGE at CoreWeave Hacks: Agent Loops, San Francisco, Sep 13-14 2026</text>
+</svg>

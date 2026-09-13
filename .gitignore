@@ -11,3 +11,5 @@ frontend/dist/
 wandb/
 .weave/
 backend/data/*.db
+*.db-wal
+*.db-shm
