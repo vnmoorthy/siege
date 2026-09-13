@@ -60,12 +60,12 @@ RED = hex_lin("#ff3b5c")
 VIOLET = hex_lin("#a78bfa")
 BLUE = hex_lin("#60a5fa")
 WHITE = (1.0, 1.0, 1.0, 1.0)
-NEUTRAL = mix(BLUE, WHITE, 0.45)        # colour of an attack in flight
+NEUTRAL = mix(BLUE, WHITE, 0.18)        # colour of an attack in flight
 SPARK = mix(AMBER, WHITE, 0.2)
 
 # --------------------------------------------------------------- geometry
 R_GATE = 3.0          # ring major radius
-TUBE = 0.075          # ring tube radius
+TUBE = 0.085          # ring tube radius
 R_HIT = R_GATE + 0.12  # where a blocked projectile stops
 R_CORE = 0.42         # where a breach ends
 
@@ -88,6 +88,8 @@ def parse_args():
     p.add_argument("--seed", type=int, default=7)
     p.add_argument("--save-blend", default=None)
     p.add_argument("--no-render", action="store_true")
+    p.add_argument("--quality", choices=["loop", "hero"], default=None,
+                   help="render quality preset (default: hero for --hero, else loop)")
     return p.parse_args(argv)
 
 
@@ -228,7 +230,7 @@ def mat_gate_ring():
     dash_fine = dash_pattern(t, ang, 48, 0.10, 0.30)           # typed segments
     dash_coarse = dash_pattern(t, ang, 12, 0.18, 0.46, 0.4, 1.0)  # slow grouping
     pattern = nmath(t, "MULTIPLY", dash_fine, dash_coarse)
-    strength = nmath(t, "ADD", 3.2, nmath(t, "MULTIPLY", pattern, 5.5))
+    strength = nmath(t, "ADD", 4.0, nmath(t, "MULTIPLY", pattern, 6.0))
 
     sweep = t.nodes.new("ShaderNodeValue")
     sweep.name = "Sweep"
@@ -390,9 +392,9 @@ def build(scene):
     bgn.inputs["Color"].default_value = BG
     bgn.inputs["Strength"].default_value = 1.0
     vol = wt.nodes.new("ShaderNodeVolumePrincipled")
-    vol.inputs["Density"].default_value = 0.012
+    vol.inputs["Density"].default_value = 0.028
     vol.inputs["Color"].default_value = (0.55, 0.66, 0.95, 1.0)
-    vol.inputs["Anisotropy"].default_value = 0.35
+    vol.inputs["Anisotropy"].default_value = 0.4
     wt.links.new(vol.outputs[0], wt.nodes["World Output"].inputs["Volume"])
 
     # Rig: local XY plane is the gate plane, facing the camera (-Y world)
@@ -427,7 +429,7 @@ def build(scene):
     core_col = mix(BLUE, WHITE, 0.25)
     for f in range(1, LOOP + 2, 3):
         t = (f - 1) / LOOP
-        core.color = core_col[:3] + (15.0 + 4.0 * math.sin(2 * TAU * t),)
+        core.color = core_col[:3] + (9.0 + 2.5 * math.sin(2 * TAU * t),)
         core.keyframe_insert("color", frame=f)
 
     # Lights ---------------------------------------------------------------
@@ -447,9 +449,23 @@ def build(scene):
     n_ring_lights = 10
     for i in range(n_ring_lights):
         a = TAU * i / n_ring_lights
-        point_light(f"GateLight.{i:02d}", EMERALD, 55.0, 0.7, rig,
+        point_light(f"GateLight.{i:02d}", EMERALD, 420.0, 0.7, rig,
                     (R_GATE * math.cos(a), R_GATE * math.sin(a), 0.0), volume=1.4)
-    point_light("CoreLight", BLUE, 320.0, 0.35, rig, (0, 0, 0), volume=1.2)
+    point_light("CoreLight", BLUE, 1100.0, 0.35, rig, (0, 0, 0), volume=1.2)
+
+    # Soft backlight behind the gate: a halo in the fog, depth behind the ring
+    back = bpy.data.lights.new("BackGlow", "AREA")
+    back.shape = "DISK"
+    back.size = 6.5
+    back.color = mix(EMERALD, BLUE, 0.55)[:3]
+    back.energy = 2600.0
+    back.use_shadow = False
+    back.volume_factor = 1.6
+    back.diffuse_factor = 0.25
+    back.specular_factor = 0.25
+    back_ob = link_obj(bpy.data.objects.new("BackGlow", back), rig)
+    back_ob.location = (0.0, 0.0, -3.0)
+    back_ob.rotation_euler = (math.pi, 0.0, 0.0)   # emit toward the camera
 
     key = bpy.data.lights.new("Key", "AREA")
     key.color = (0.75, 0.82, 1.0)
@@ -468,7 +484,7 @@ def build(scene):
 
     flash_lights = []
     for i in range(3):
-        _, ld = point_light(f"BreachLight.{i}", RED, 0.0, 0.5, rig, (0, 0, 0), volume=1.6)
+        _, ld = point_light(f"BreachLight.{i}", RED, 0.0, 0.5, rig, (0, 0, 0), volume=1.8)
         ld.keyframe_insert("energy", frame=1)
         flash_lights.append(ld)
 
@@ -490,8 +506,8 @@ def build(scene):
     scene.camera = cam_ob
     for f in range(1, LOOP + 2):
         t = (f - 1) / LOOP
-        az = math.radians(20.0 + 3.5 * math.sin(TAU * t))
-        el = math.radians(8.0 + 1.6 * math.sin(TAU * t + 0.9))
+        az = math.radians(26.0 + 3.5 * math.sin(TAU * t))
+        el = math.radians(10.0 + 1.6 * math.sin(TAU * t + 0.9))
         d = 21.0 + 0.9 * math.sin(TAU * t + 2.2)
         cam_ob.location = (d * math.sin(az) * math.cos(el),
                            -d * math.cos(az) * math.cos(el),
@@ -502,10 +518,10 @@ def build(scene):
     m_glow = mat_object_glow("Glow")
     m_disc = mat_impact_disc(0.35)
     m_blob = mat_soft_blob()
-    proj_mesh = mesh_sphere("ProjMesh", 0.08, 20, 10)
+    proj_mesh = mesh_sphere("ProjMesh", 0.06, 20, 10)
     spark_mesh = mesh_sphere("SparkMesh", 0.04, 12, 6)
     disc_mesh = mesh_disc("DiscMesh", 0.35)
-    flash_mesh = mesh_sphere("FlashMesh", 0.55, 32, 16)
+    flash_mesh = mesh_sphere("FlashMesh", 0.42, 32, 16)
 
     flashes = []
     for i in range(4):
@@ -516,8 +532,8 @@ def build(scene):
         flashes.append(fl)
 
     # Projectiles ----------------------------------------------------------
-    A_FLY = 7.0
-    ELONG = (2.6, 0.75, 0.75)
+    A_FLY = 4.5
+    ELONG = (3.2, 0.6, 0.6)
     core_events = []
     n_breach = n_block = 0
 
@@ -530,7 +546,7 @@ def build(scene):
         T = (r0 - R_HIT) / v
         t_hit = t0 + T
         phase = ((t_hit - 1.0) % LOOP) / LOOP
-        breach = rng.random() < (0.27 if phase < 0.5 else 0.08)
+        breach = rng.random() < (0.24 if phase < 0.5 else 0.06)
         ct, st = math.cos(theta), math.sin(theta)
 
         def pos(r):
@@ -539,7 +555,7 @@ def build(scene):
 
         ob = new_obj(f"Proj.{i:03d}", proj_mesh, m_glow, rig)
         ob.rotation_euler = (0.0, 0.0, theta)
-        fly_col = mix(NEUTRAL, RED, 0.5) if breach else NEUTRAL
+        fly_col = mix(NEUTRAL, RED, 0.6) if breach else NEUTRAL
 
         # flight path, slight ease-in, sampled every ~4 frames
         n = max(3, int(math.ceil(T / 4.0)))
@@ -624,20 +640,20 @@ def build(scene):
     core_events.sort()
     for j, t_c in enumerate(core_events):
         fl = flashes[j % len(flashes)]
-        keyed(fl, "scale", t_c - 1, (0.2,) * 3)
+        keyed(fl, "scale", t_c - 1, (0.3,) * 3)
         keyed(fl, "scale", t_c + 1, (1.0,) * 3)
-        keyed(fl, "scale", t_c + 4, (1.6,) * 3)
-        keyed(fl, "scale", t_c + 14, (2.4,) * 3)
+        keyed(fl, "scale", t_c + 4, (1.5,) * 3)
+        keyed(fl, "scale", t_c + 12, (2.1,) * 3)
         keyed(fl, "color", t_c - 1, RED[:3] + (0.0,))
-        keyed(fl, "color", t_c + 1, RED[:3] + (40.0,))
-        keyed(fl, "color", t_c + 4, RED[:3] + (20.0,))
-        keyed(fl, "color", t_c + 14, RED[:3] + (0.0,))
-        key_visible(fl, t_c - 1, t_c + 14)
+        keyed(fl, "color", t_c + 1, RED[:3] + (18.0,))
+        keyed(fl, "color", t_c + 4, RED[:3] + (7.0,))
+        keyed(fl, "color", t_c + 12, RED[:3] + (0.0,))
+        key_visible(fl, t_c - 1, t_c + 12)
         ld = flash_lights[j % len(flash_lights)]
         keyed(ld, "energy", t_c - 1, 0.0)
-        keyed(ld, "energy", t_c + 1, 2200.0)
-        keyed(ld, "energy", t_c + 4, 1200.0)
-        keyed(ld, "energy", t_c + 14, 0.0)
+        keyed(ld, "energy", t_c + 1, 4500.0)
+        keyed(ld, "energy", t_c + 4, 2200.0)
+        keyed(ld, "energy", t_c + 12, 0.0)
 
     print(f"[siege] projectiles={ARGS.count} blocked={n_block} breached={n_breach} "
           f"objects={len(bpy.data.objects)}")
@@ -654,11 +670,11 @@ def build_compositor(scene, width, height):
     glare = ng.nodes.new("CompositorNodeGlare")
     glare.inputs["Type"].default_value = "Bloom"
     glare.inputs["Quality"].default_value = "High"
-    sock_in(glare, "Highlights Threshold").default_value = 1.0
-    sock_in(glare, "Highlights Smoothness").default_value = 0.15
-    glare.inputs["Strength"].default_value = 0.5
-    glare.inputs["Size"].default_value = 0.55
-    glare.inputs["Saturation"].default_value = 0.95
+    sock_in(glare, "Highlights Threshold").default_value = 0.85
+    sock_in(glare, "Highlights Smoothness").default_value = 0.2
+    glare.inputs["Strength"].default_value = 1.15
+    glare.inputs["Size"].default_value = 0.8
+    glare.inputs["Saturation"].default_value = 1.0
     ng.links.new(rl.outputs["Image"], glare.inputs["Image"])
 
     # Vignette: blurred ellipse mask multiplied into the image
@@ -691,7 +707,7 @@ def build_compositor(scene, width, height):
 
 
 # ------------------------------------------------------------ render setup
-def setup_render(scene, width, height, samples):
+def setup_render(scene, width, height, samples, quality):
     r = scene.render
     r.engine = "BLENDER_EEVEE"
     r.resolution_x, r.resolution_y = width, height
@@ -706,13 +722,14 @@ def setup_render(scene, width, height, samples):
 
     ev = scene.eevee
     ev.taa_render_samples = samples
-    ev.use_shadows = True
+    hero = quality == "hero"
+    ev.use_shadows = hero            # everything that matters is emissive
     ev.shadow_ray_count = 1
     ev.shadow_step_count = 3
-    ev.use_raytracing = True
+    ev.use_raytracing = hero
     ev.use_volumetric_shadows = False
-    ev.volumetric_tile_size = "4"
-    ev.volumetric_samples = 96
+    ev.volumetric_tile_size = "4" if hero else "8"
+    ev.volumetric_samples = 128 if hero else 64
     ev.volumetric_start = 1.0
     ev.volumetric_end = 60.0
     ev.use_fast_gi = False
@@ -752,7 +769,8 @@ def main():
     scene.frame_current = 1
     build(scene)
     samples = ARGS.samples or (128 if ARGS.hero else 48)
-    setup_render(scene, width, height, samples)
+    quality = ARGS.quality or ("hero" if ARGS.hero else "loop")
+    setup_render(scene, width, height, samples, quality)
     build_compositor(scene, width, height)
 
     if ARGS.save_blend:
