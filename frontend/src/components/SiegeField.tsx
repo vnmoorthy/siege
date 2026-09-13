@@ -483,10 +483,10 @@ class Ambient {
       this.posArr[j + 2] = rand(-22, 6)
       this.vx[i] = 0.5 + rand(-0.9, 0.9)
       this.vy[i] = rand(-0.9, 0.9)
-      this.baseA[i] = rand(0.12, 0.45)
+      this.baseA[i] = rand(0.18, 0.6)
       this.freq[i] = rand(0.4, 1.6)
       this.phase[i] = rand(0, Math.PI * 2)
-      sizArr[i] = rand(0.25, 0.8)
+      sizArr[i] = rand(0.35, 1.15)
       this.alpArr[i] = this.baseA[i]
     }
     geometry.setAttribute('position', this.pos)
@@ -768,7 +768,7 @@ class FieldEngine {
   }
 
   private buildHalo(): { points: THREE.Points; material: THREE.ShaderMaterial; pos: THREE.BufferAttribute; ang: Float32Array; off: Float32Array } {
-    const n = 640
+    const n = 480
     const geometry = new THREE.BufferGeometry()
     const pos = dynAttr(n, 3)
     const col = new Float32Array(n * 3).fill(1)
