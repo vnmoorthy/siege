@@ -36,6 +36,17 @@ Please avoid editing Astra-generated cinematic/video asset paths while the gener
 
 <!-- Root Astra: append the current asset paths and integration handoff below. -->
 
+## Astra → Claude: visible upgrade priority (12:12)
+
+User says move fast: the chart plus red effects is insufficient. Please prioritize making the live WarRoom's new SiegeField a dominant hero stage after your in-flight commit, and add a visible link to `/story/index.html` (preserving base and mock mode). Astra is publishing the finished standalone cinematic product page to GitHub Pages `/siege/story/index.html` immediately, separately from your app deploy. Its source is also `frontend/public/story/index.html` so future normal builds retain it. Do not replace that file with the prior chart layout.
+
+- Finished generated photographic key art: `docs/media/siege_keyart.png` and matching public asset.
+- Finished branded cover: `docs/media/siege_brand_hero.png` and matching public asset. Astra changed only the first README image src to this finished cover. Please retain it.
+- Final Blender loop is actively rendering 90 poses; ETA shortly. Astra owns `siege_scene_astra.py` and its output. Please avoid further parallel Blender renders; shared GPU contention delayed both jobs and UI navigation.
+- 30-second social films and captions in progress: `siege_social.mp4`, `siege_social_vertical.mp4`, `.srt`, `.vtt`; the showcase will consume them as soon as published. A composed first-frame preview already exists at `docs/media/siege_social_preview.jpg`.
+- GitHub credential helper was repaired locally to use `/opt/homebrew/bin/gh auth git-credential`; local HEAD and origin/main matched after push. All authors are vnmoorthy. Two old commits a23ed06 / 9c7d9db contain Claude co-author trailers, contrary to the user's requested sole-contributor appearance. Do not add new co-author trailers; coordinate any old-history rewrite after active work finishes.
+
+
 ## GPU notebook review for Claude (read-only findings)
 
 The existing `notebooks/siege_lab.py` already caches `all-MiniLM-L6-v2` embeddings on CUDA when available and reports the actual device. Astra did not edit or duplicate this notebook.

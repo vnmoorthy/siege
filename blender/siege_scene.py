@@ -80,6 +80,7 @@ def parse_args():
     p.add_argument("--frames", type=int, default=180)
     p.add_argument("--start", type=int, default=1)
     p.add_argument("--end", type=int, default=None)
+    p.add_argument("--only", default=None, help="comma-separated frames to render as stills")
     p.add_argument("--samples", type=int, default=None)
     p.add_argument("--hero", action="store_true")
     p.add_argument("--hero-frame", type=int, default=90)
@@ -116,10 +117,44 @@ def keyed(obj, path, frame, value=None, wrap=True):
         obj.keyframe_insert(data_path=path, frame=frame + off)
 
 
-def key_visible(obj, t_on, t_off):
-    """Render-visible in [t_on, t_off), hidden elsewhere (wrapped)."""
-    keyed(obj, "hide_render", t_on, False)
-    keyed(obj, "hide_render", t_off, True)
+class Track:
+    """Collects keys for one object and writes them as F-curves in one go.
+    keyframe_insert() rebuilds relations per call, which is far too slow for
+    ~500 animated objects; building the curves directly takes ~1 s total.
+    Every key is duplicated at frame +- LOOP so the motion is periodic."""
+
+    def __init__(self, obj, wrap=True):
+        self.obj = obj
+        self.wrap = wrap
+        self.keys = {}
+
+    def key(self, path, frame, value):
+        vals = value if hasattr(value, "__len__") else (value,)
+        for i, v in enumerate(vals):
+            self.keys.setdefault((path, i), []).append((float(frame), float(v)))
+
+    def visible(self, t_on, t_off):
+        """Render-visible in [t_on, t_off), hidden elsewhere."""
+        self.key("hide_render", t_on, 0.0)
+        self.key("hide_render", t_off, 1.0)
+
+    def commit(self):
+        act = bpy.data.actions.new(self.obj.name)
+        slot = act.slots.new("OBJECT", self.obj.name)
+        bag = act.layers.new("Layer").strips.new(type="KEYFRAME").channelbag(slot, ensure=True)
+        offs = (-LOOP, 0, LOOP) if self.wrap else (0,)
+        for (path, idx), pts in self.keys.items():
+            pts = sorted((f + off, v) for off in offs for f, v in pts)
+            fc = bag.fcurves.new(path, index=idx)
+            fc.keyframe_points.add(len(pts))
+            fc.keyframe_points.foreach_set("co", [x for f, v in pts for x in (f, v)])
+            interp = "CONSTANT" if path == "hide_render" else "LINEAR"
+            for kp in fc.keyframe_points:
+                kp.interpolation = interp
+            fc.update()
+        ad = self.obj.animation_data_create()
+        ad.action = act
+        ad.action_slot = slot
 
 
 def link_obj(obj, parent=None):
@@ -230,7 +265,7 @@ def mat_gate_ring():
     dash_fine = dash_pattern(t, ang, 48, 0.10, 0.30)           # typed segments
     dash_coarse = dash_pattern(t, ang, 12, 0.18, 0.46, 0.4, 1.0)  # slow grouping
     pattern = nmath(t, "MULTIPLY", dash_fine, dash_coarse)
-    strength = nmath(t, "ADD", 4.0, nmath(t, "MULTIPLY", pattern, 6.0))
+    strength = nmath(t, "ADD", 3.0, nmath(t, "MULTIPLY", pattern, 4.5))
 
     sweep = t.nodes.new("ShaderNodeValue")
     sweep.name = "Sweep"
@@ -392,8 +427,8 @@ def build(scene):
     bgn.inputs["Color"].default_value = BG
     bgn.inputs["Strength"].default_value = 1.0
     vol = wt.nodes.new("ShaderNodeVolumePrincipled")
-    vol.inputs["Density"].default_value = 0.028
-    vol.inputs["Color"].default_value = (0.55, 0.66, 0.95, 1.0)
+    vol.inputs["Density"].default_value = 0.009
+    vol.inputs["Color"].default_value = (0.3, 0.45, 1.0, 1.0)
     vol.inputs["Anisotropy"].default_value = 0.4
     wt.links.new(vol.outputs[0], wt.nodes["World Output"].inputs["Volume"])
 
@@ -425,11 +460,11 @@ def build(scene):
     outer.keyframe_insert("rotation_euler", frame=LOOP + 1)
 
     # Core
-    core = new_obj("Core", mesh_sphere("CoreMesh", 0.34, 48, 24), mat_core(), rig)
+    core = new_obj("Core", mesh_sphere("CoreMesh", 0.4, 48, 24), mat_core(), rig)
     core_col = mix(BLUE, WHITE, 0.25)
     for f in range(1, LOOP + 2, 3):
         t = (f - 1) / LOOP
-        core.color = core_col[:3] + (9.0 + 2.5 * math.sin(2 * TAU * t),)
+        core.color = core_col[:3] + (6.5 + 2.0 * math.sin(2 * TAU * t),)
         core.keyframe_insert("color", frame=f)
 
     # Lights ---------------------------------------------------------------
@@ -449,16 +484,16 @@ def build(scene):
     n_ring_lights = 10
     for i in range(n_ring_lights):
         a = TAU * i / n_ring_lights
-        point_light(f"GateLight.{i:02d}", EMERALD, 420.0, 0.7, rig,
+        point_light(f"GateLight.{i:02d}", EMERALD, 160.0, 0.7, rig,
                     (R_GATE * math.cos(a), R_GATE * math.sin(a), 0.0), volume=1.4)
-    point_light("CoreLight", BLUE, 1100.0, 0.35, rig, (0, 0, 0), volume=1.2)
+    point_light("CoreLight", BLUE, 450.0, 0.35, rig, (0, 0, 0), volume=1.2)
 
     # Soft backlight behind the gate: a halo in the fog, depth behind the ring
     back = bpy.data.lights.new("BackGlow", "AREA")
     back.shape = "DISK"
     back.size = 6.5
     back.color = mix(EMERALD, BLUE, 0.55)[:3]
-    back.energy = 2600.0
+    back.energy = 520.0
     back.use_shadow = False
     back.volume_factor = 1.6
     back.diffuse_factor = 0.25
@@ -527,9 +562,7 @@ def build(scene):
     for i in range(4):
         fl = new_obj(f"Flash.{i}", flash_mesh, m_blob, rig)
         fl.color = RED[:3] + (0.0,)
-        fl.hide_render = True
-        fl.keyframe_insert("hide_render", frame=-LOOP)
-        flashes.append(fl)
+        flashes.append(Track(fl))
 
     # Projectiles ----------------------------------------------------------
     A_FLY = 4.5
@@ -555,42 +588,44 @@ def build(scene):
 
         ob = new_obj(f"Proj.{i:03d}", proj_mesh, m_glow, rig)
         ob.rotation_euler = (0.0, 0.0, theta)
+        tr = Track(ob)
         fly_col = mix(NEUTRAL, RED, 0.6) if breach else NEUTRAL
 
         # flight path, slight ease-in, sampled every ~4 frames
         n = max(3, int(math.ceil(T / 4.0)))
         for k in range(n + 1):
             u = k / n
-            keyed(ob, "location", t0 + u * T, pos(r0 - (r0 - R_HIT) * (u ** 1.12)))
+            tr.key("location", t0 + u * T, pos(r0 - (r0 - R_HIT) * (u ** 1.12)))
 
-        keyed(ob, "scale", t0, (0.4, 0.2, 0.2))
-        keyed(ob, "scale", t0 + 10, ELONG)
-        keyed(ob, "color", t0, fly_col[:3] + (0.0,))
-        keyed(ob, "color", t0 + 10, fly_col[:3] + (A_FLY,))
-        keyed(ob, "color", t_hit - 1, fly_col[:3] + (A_FLY,))
+        tr.key("scale", t0, (0.4, 0.2, 0.2))
+        tr.key("scale", t0 + 10, ELONG)
+        tr.key("color", t0, fly_col[:3] + (0.0,))
+        tr.key("color", t0 + 10, fly_col[:3] + (A_FLY,))
+        tr.key("color", t_hit - 1, fly_col[:3] + (A_FLY,))
 
         disc = new_obj(f"Impact.{i:03d}", disc_mesh, m_disc, rig)
         disc.location = (R_GATE * ct, R_GATE * st, 0.0)
+        td = Track(disc)
 
         if not breach:
             n_block += 1
-            keyed(ob, "scale", t_hit - 2, ELONG)
-            keyed(ob, "scale", t_hit, (1.4, 1.5, 1.5))
-            keyed(ob, "scale", t_hit + 3, (1.0, 1.3, 1.3))
-            keyed(ob, "scale", t_hit + 10, (0.05, 0.05, 0.05))
-            keyed(ob, "location", t_hit + 10, pos(R_HIT))
-            keyed(ob, "color", t_hit, AMBER[:3] + (36.0,))
-            keyed(ob, "color", t_hit + 3, AMBER[:3] + (12.0,))
-            keyed(ob, "color", t_hit + 10, AMBER[:3] + (0.0,))
-            key_visible(ob, t0, t_hit + 10)
+            tr.key("scale", t_hit - 2, ELONG)
+            tr.key("scale", t_hit, (1.4, 1.5, 1.5))
+            tr.key("scale", t_hit + 3, (1.0, 1.3, 1.3))
+            tr.key("scale", t_hit + 10, (0.05, 0.05, 0.05))
+            tr.key("location", t_hit + 10, pos(R_HIT))
+            tr.key("color", t_hit, AMBER[:3] + (36.0,))
+            tr.key("color", t_hit + 3, AMBER[:3] + (12.0,))
+            tr.key("color", t_hit + 10, AMBER[:3] + (0.0,))
+            tr.visible(t0, t_hit + 10)
 
-            keyed(disc, "scale", t_hit, (0.25,) * 3)
-            keyed(disc, "scale", t_hit + 5, (1.0,) * 3)
-            keyed(disc, "scale", t_hit + 13, (1.35,) * 3)
-            keyed(disc, "color", t_hit, AMBER[:3] + (10.0,))
-            keyed(disc, "color", t_hit + 5, AMBER[:3] + (3.5,))
-            keyed(disc, "color", t_hit + 13, AMBER[:3] + (0.0,))
-            key_visible(disc, t_hit, t_hit + 13)
+            td.key("scale", t_hit, (0.25,) * 3)
+            td.key("scale", t_hit + 5, (1.0,) * 3)
+            td.key("scale", t_hit + 13, (1.35,) * 3)
+            td.key("color", t_hit, AMBER[:3] + (10.0,))
+            td.key("color", t_hit + 5, AMBER[:3] + (3.5,))
+            td.key("color", t_hit + 13, AMBER[:3] + (0.0,))
+            td.visible(t_hit, t_hit + 13)
 
             p0 = Vector(pos(R_HIT))
             for k in range(4):
@@ -600,60 +635,66 @@ def build(scene):
                 d.normalize()
                 dist = rng.uniform(0.45, 1.2)
                 dur = rng.uniform(10.0, 18.0)
-                sp = new_obj(f"Spark.{i:03d}.{k}", spark_mesh, m_glow, rig)
+                ts = Track(new_obj(f"Spark.{i:03d}.{k}", spark_mesh, m_glow, rig))
                 for u in (0.0, 0.3, 0.6, 1.0):
-                    s = 1.0 - (1.0 - u) ** 2
-                    keyed(sp, "location", t_hit + u * dur, tuple(p0 + d * dist * s))
-                keyed(sp, "scale", t_hit, (0.3,) * 3)
-                keyed(sp, "scale", t_hit + 1.5, (1.0,) * 3)
-                keyed(sp, "scale", t_hit + dur, (0.15,) * 3)
-                keyed(sp, "color", t_hit, SPARK[:3] + (26.0,))
-                keyed(sp, "color", t_hit + dur * 0.5, SPARK[:3] + (8.0,))
-                keyed(sp, "color", t_hit + dur, SPARK[:3] + (0.0,))
-                key_visible(sp, t_hit, t_hit + dur)
+                    s_ = 1.0 - (1.0 - u) ** 2
+                    ts.key("location", t_hit + u * dur, tuple(p0 + d * dist * s_))
+                ts.key("scale", t_hit, (0.3,) * 3)
+                ts.key("scale", t_hit + 1.5, (1.0,) * 3)
+                ts.key("scale", t_hit + dur, (0.15,) * 3)
+                ts.key("color", t_hit, SPARK[:3] + (26.0,))
+                ts.key("color", t_hit + dur * 0.5, SPARK[:3] + (8.0,))
+                ts.key("color", t_hit + dur, SPARK[:3] + (0.0,))
+                ts.visible(t_hit, t_hit + dur)
+                ts.commit()
         else:
             n_breach += 1
             t_c = t_hit + (R_HIT - R_CORE) / v
-            keyed(ob, "location", t_c, pos(R_CORE))
-            keyed(ob, "scale", t_hit - 1, ELONG)
-            keyed(ob, "scale", t_hit, (2.0, 1.1, 1.1))
-            keyed(ob, "scale", t_hit + 4, ELONG)
-            keyed(ob, "scale", t_c - 1, ELONG)
-            keyed(ob, "scale", t_c + 1, (0.1,) * 3)
-            keyed(ob, "color", t_hit, RED[:3] + (45.0,))
-            keyed(ob, "color", t_hit + 4, RED[:3] + (16.0,))
-            keyed(ob, "color", t_c - 1, RED[:3] + (16.0,))
-            keyed(ob, "color", t_c + 1, RED[:3] + (0.0,))
-            key_visible(ob, t0, t_c + 1)
+            tr.key("location", t_c, pos(R_CORE))
+            tr.key("scale", t_hit - 1, ELONG)
+            tr.key("scale", t_hit, (2.0, 1.1, 1.1))
+            tr.key("scale", t_hit + 4, ELONG)
+            tr.key("scale", t_c - 1, ELONG)
+            tr.key("scale", t_c + 1, (0.1,) * 3)
+            tr.key("color", t_hit, RED[:3] + (45.0,))
+            tr.key("color", t_hit + 4, RED[:3] + (16.0,))
+            tr.key("color", t_c - 1, RED[:3] + (16.0,))
+            tr.key("color", t_c + 1, RED[:3] + (0.0,))
+            tr.visible(t0, t_c + 1)
 
-            keyed(disc, "scale", t_hit, (0.2,) * 3)
-            keyed(disc, "scale", t_hit + 4, (0.8,) * 3)
-            keyed(disc, "scale", t_hit + 9, (1.05,) * 3)
-            keyed(disc, "color", t_hit, RED[:3] + (12.0,))
-            keyed(disc, "color", t_hit + 4, RED[:3] + (3.0,))
-            keyed(disc, "color", t_hit + 9, RED[:3] + (0.0,))
-            key_visible(disc, t_hit, t_hit + 9)
+            td.key("scale", t_hit, (0.2,) * 3)
+            td.key("scale", t_hit + 4, (0.8,) * 3)
+            td.key("scale", t_hit + 9, (1.05,) * 3)
+            td.key("color", t_hit, RED[:3] + (12.0,))
+            td.key("color", t_hit + 4, RED[:3] + (3.0,))
+            td.key("color", t_hit + 9, RED[:3] + (0.0,))
+            td.visible(t_hit, t_hit + 9)
             core_events.append(t_c)
+        tr.commit()
+        td.commit()
 
     # Breach flashes at the core, round-robin over a small pool so that
     # overlapping events never fight over one object's keyframes.
     core_events.sort()
     for j, t_c in enumerate(core_events):
         fl = flashes[j % len(flashes)]
-        keyed(fl, "scale", t_c - 1, (0.3,) * 3)
-        keyed(fl, "scale", t_c + 1, (1.0,) * 3)
-        keyed(fl, "scale", t_c + 4, (1.5,) * 3)
-        keyed(fl, "scale", t_c + 12, (2.1,) * 3)
-        keyed(fl, "color", t_c - 1, RED[:3] + (0.0,))
-        keyed(fl, "color", t_c + 1, RED[:3] + (18.0,))
-        keyed(fl, "color", t_c + 4, RED[:3] + (7.0,))
-        keyed(fl, "color", t_c + 12, RED[:3] + (0.0,))
-        key_visible(fl, t_c - 1, t_c + 12)
+        fl.key("scale", t_c - 1, (0.3,) * 3)
+        fl.key("scale", t_c + 1, (1.0,) * 3)
+        fl.key("scale", t_c + 4, (1.5,) * 3)
+        fl.key("scale", t_c + 12, (2.1,) * 3)
+        fl.key("color", t_c - 1, RED[:3] + (0.0,))
+        fl.key("color", t_c + 1, RED[:3] + (18.0,))
+        fl.key("color", t_c + 4, RED[:3] + (7.0,))
+        fl.key("color", t_c + 12, RED[:3] + (0.0,))
+        fl.visible(t_c - 1, t_c + 12)
         ld = flash_lights[j % len(flash_lights)]
         keyed(ld, "energy", t_c - 1, 0.0)
         keyed(ld, "energy", t_c + 1, 4500.0)
         keyed(ld, "energy", t_c + 4, 2200.0)
         keyed(ld, "energy", t_c + 12, 0.0)
+
+    for fl in flashes:
+        fl.commit()
 
     print(f"[siege] projectiles={ARGS.count} blocked={n_block} breached={n_breach} "
           f"objects={len(bpy.data.objects)}")
@@ -670,10 +711,10 @@ def build_compositor(scene, width, height):
     glare = ng.nodes.new("CompositorNodeGlare")
     glare.inputs["Type"].default_value = "Bloom"
     glare.inputs["Quality"].default_value = "High"
-    sock_in(glare, "Highlights Threshold").default_value = 0.85
-    sock_in(glare, "Highlights Smoothness").default_value = 0.2
-    glare.inputs["Strength"].default_value = 1.15
-    glare.inputs["Size"].default_value = 0.8
+    sock_in(glare, "Highlights Threshold").default_value = 0.75
+    sock_in(glare, "Highlights Smoothness").default_value = 0.25
+    glare.inputs["Strength"].default_value = 1.5
+    glare.inputs["Size"].default_value = 0.85
     glare.inputs["Saturation"].default_value = 1.0
     ng.links.new(rl.outputs["Image"], glare.inputs["Image"])
 
@@ -689,7 +730,7 @@ def build_compositor(scene, width, height):
     vig.interpolation_type = "SMOOTHSTEP"
     vig.inputs["From Min"].default_value = 0.0
     vig.inputs["From Max"].default_value = 1.0
-    vig.inputs["To Min"].default_value = 0.48
+    vig.inputs["To Min"].default_value = 0.3
     vig.inputs["To Max"].default_value = 1.0
     ng.links.new(blur.outputs[0], vig.inputs["Value"])
     mul = ng.nodes.new("ShaderNodeMix")
@@ -699,8 +740,16 @@ def build_compositor(scene, width, height):
     ng.links.new(glare.outputs["Image"], sock_in(mul, "A_Color"))
     ng.links.new(vig.outputs["Result"], sock_in(mul, "B_Color"))
 
+    lens = ng.nodes.new("CompositorNodeLensdist")
+    lens.inputs["Type"].default_value = "Radial"
+    lens.inputs["Distortion"].default_value = 0.0
+    lens.inputs["Dispersion"].default_value = 0.012
+    lens.inputs["Jitter"].default_value = False
+    lens.inputs["Fit"].default_value = True
+    ng.links.new(sock_out(mul, "Result_Color"), lens.inputs["Image"])
+
     out = ng.nodes.new("NodeGroupOutput")
-    ng.links.new(sock_out(mul, "Result_Color"), out.inputs[0])
+    ng.links.new(lens.outputs["Image"], out.inputs[0])
 
     scene.render.use_compositing = True
     scene.render.compositor_device = "GPU"
@@ -767,7 +816,9 @@ def main():
     scene.frame_start = 1
     scene.frame_end = LOOP
     scene.frame_current = 1
+    t_build = time.time()
     build(scene)
+    print(f"[siege] scene built in {time.time() - t_build:.1f}s")
     samples = ARGS.samples or (128 if ARGS.hero else 48)
     quality = ARGS.quality or ("hero" if ARGS.hero else "loop")
     setup_render(scene, width, height, samples, quality)
@@ -788,10 +839,19 @@ def main():
               f"-> {scene.render.filepath}")
         return
 
-    scene.frame_start = ARGS.start
-    scene.frame_end = ARGS.end or LOOP
     frames_dir = os.path.join(out, "frames")
     os.makedirs(frames_dir, exist_ok=True)
+    if ARGS.only:
+        for f in (int(x) for x in ARGS.only.split(",")):
+            scene.frame_set(f)
+            scene.render.filepath = os.path.join(frames_dir, f"frame_{f:04d}.png")
+            t0 = time.time()
+            bpy.ops.render.render(write_still=True)
+            print(f"[siege] frame {f} rendered in {time.time() - t0:.2f}s")
+        return
+
+    scene.frame_start = ARGS.start
+    scene.frame_end = ARGS.end or LOOP
     scene.render.filepath = os.path.join(frames_dir, "frame_")
     bpy.app.handlers.render_write.append(_on_frame_written)
     _timing["last"] = time.time()

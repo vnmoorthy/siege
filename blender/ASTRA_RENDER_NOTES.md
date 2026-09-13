@@ -25,6 +25,20 @@ Run from the `siege` directory:
 python blender/encode_astra.py --frames blender/astra_frames
 ```
 
+The hackathon delivery uses 90 geometric poses at 960×540, sampled from the
+six-second timeline at 15 fps, then optical-flow interpolation to 30 fps:
+
+```sh
+/Applications/Blender.app/Contents/MacOS/Blender -b -P blender/siege_scene_astra.py -- --out blender/astra_frames --res 960 540 --start 1 --end 180 --step 2 --samples 8 --save-blend
+python blender/encode_astra.py --frames blender/astra_frames --fps 15 --interpolate-fps 30 --poster-frame 17
+```
+
+This is a delivery tradeoff for the heavily shared laptop. The required
+ten-frame test at 1280×720 / 16 samples averaged **15.071 s/frame** and did not
+meet the 3-second target. Reduced-resolution rendering later reached roughly
+2–5 s/frame when contention eased, with occasional slower frames. The first
+render also has significant one-time shader compilation cost.
+
 For the large still:
 
 ```sh
@@ -34,6 +48,12 @@ For the large still:
 Optional `--title` adds a dimensional SIEGE wordmark. The source is necessary
 to regenerate animation: frame handlers run in Python and are deliberately
 not hidden inside an auto-running text block in the saved `.blend` file.
+
+For a supported cloud GPU, add `--engine CYCLES --device GPU --samples 64`.
+The script selects an available OptiX, CUDA, Metal, HIP or oneAPI backend and
+raises an error if no GPU is found. It does not silently fall back to CPU.
+This optional route is provided for later high-quality rendering; the local
+delivery was rendered with EEVEE and the Cycles route has not been run here.
 
 On this Mac the default sandbox prevents Blender's Metal device discovery,
 causing a startup crash before Python runs. Rendering requires the same

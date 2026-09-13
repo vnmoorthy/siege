@@ -16,6 +16,7 @@ parser.add_argument('--ffmpeg', default='/opt/homebrew/bin/ffmpeg')
 parser.add_argument('--name', default='siege_loop')
 parser.add_argument('--poster-frame', type=int, default=28)
 parser.add_argument('--interpolate-fps', type=int, default=0, help='Optical-flow interpolate a lower-rate loop to this delivery frame rate.')
+parser.add_argument('--expected-frames', type=int, default=0, help='Fail if an in-progress or stale render has the wrong number of frames.')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 dest = root / 'docs' / 'media'
@@ -25,6 +26,8 @@ public.mkdir(parents=True, exist_ok=True)
 frames = sorted(args.frames.glob('frame_*.png'))
 if not frames:
     raise SystemExit(f'No rendered frames found: {args.frames}')
+if args.expected_frames and len(frames) != args.expected_frames:
+    raise SystemExit(f'Expected {args.expected_frames} frames, found {len(frames)}; render is incomplete or the output directory is stale.')
 indices = [int(p.stem.split('_')[-1]) for p in frames]
 if indices != list(range(indices[0], indices[-1] + 1)):
     raise SystemExit('Frame sequence has gaps; refusing to silently shorten video.')
