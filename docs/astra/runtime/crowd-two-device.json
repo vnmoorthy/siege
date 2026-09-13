@@ -1,0 +1,41 @@
+{
+  "started_at": "2026-09-13T20:15:05.137Z",
+  "origin": "http://127.0.0.1:18001",
+  "database": "/var/folders/p2/jfmlxpgx17xgx40cg22gvsrr0000gn/T/siege-crowd-proof-aitZcA/test.db",
+  "provider_mode": "mock",
+  "browser_transport": "real API, mock=0",
+  "live_port_8000_touched": false,
+  "post_requests": [
+    {
+      "page": "phone",
+      "url": "http://127.0.0.1:18001/api/join"
+    },
+    {
+      "page": "phone",
+      "url": "http://127.0.0.1:18001/api/chat"
+    }
+  ],
+  "page_errors": [],
+  "join_visible": true,
+  "submitted_visible": true,
+  "reply_visible": true,
+  "same_turn_id": true,
+  "synthetic": false,
+  "tool_calls": [
+    {
+      "tool": "lookup_order",
+      "decision": "allow",
+      "provider": "mock",
+      "executed": true,
+      "breach": false,
+      "benign_block": false,
+      "oracle_allowed": true
+    }
+  ],
+  "message": "Please check my order status for the crowd proof.",
+  "reply": "Let me take care of that. Order NB-1040: processing, total $367.00, shipping to 1426 Folsom St, San Jose, CA 95112.",
+  "independent_storage": true,
+  "passed": true,
+  "server_stopped": true,
+  "ended_at": "2026-09-13T20:15:12.780Z"
+}
