@@ -32,6 +32,10 @@ export function EventRow({ event, compact, className }: Props) {
   const isBreach = event.type === 'breach'
   const isBlock = event.type === 'block'
   const muted = event.type === 'join' || event.type === 'attack'
+  const phase = event.data?.phase
+  const label = event.type === 'attack' && phase === 'submitted' ? 'SUBMITTED' : event.type === 'attack' && phase === 'completed' ? 'REPLY' : m.label
+  const message = typeof event.data?.message === 'string' ? event.data.message : null
+  const reply = typeof event.data?.reply === 'string' ? event.data.reply : null
   return (
     <div
       className={clsx(
@@ -50,7 +54,7 @@ export function EventRow({ event, compact, className }: Props) {
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="num text-[10px] font-bold tracking-wider" style={{ color: m.color }}>
-            {m.label}
+            {label}
           </span>
           {category && (
             <span className="rounded px-1.5 text-[10px] font-semibold uppercase tracking-wide" style={{ background: `${m.color}22`, color: m.color }}>
@@ -70,9 +74,14 @@ export function EventRow({ event, compact, className }: Props) {
           )}
           <span className="num ml-auto shrink-0 text-[10px] text-fg-3">{clock(event.at)}</span>
         </div>
-        <div className={clsx('truncate text-fg-2', compact ? 'text-[11px]' : 'text-xs', isBreach && 'text-fg')} title={event.text}>
+        <div className={clsx('break-words text-fg-2', compact ? 'truncate text-[11px]' : 'line-clamp-2 text-xs', isBreach && 'text-fg')} title={event.text}>
           {event.text}
         </div>
+        {(message || reply) && !compact && <details className="mt-1 text-[11px] text-fg-3">
+          <summary className="cursor-pointer">View {reply ? 'conversation' : 'message'}</summary>
+          {message && <p className="mt-1 whitespace-pre-wrap break-words text-fg-2"><strong>{event.attacker?.nickname ?? 'Player'}:</strong> {message}</p>}
+          {reply && <p className="mt-1 whitespace-pre-wrap break-words text-fg-2"><strong>Agent:</strong> {reply}</p>}
+        </details>}
       </div>
     </div>
   )

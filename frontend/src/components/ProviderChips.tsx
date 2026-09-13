@@ -22,9 +22,9 @@ export function ProviderChips({ providers, mode, size = 'xs', compact }: Props) 
         </Chip>
       )}
       {rows.map((r) => (
-        <Chip key={r.key} tone={r.live ? 'green' : 'amber'} size={size} dot title={`${r.label}: ${r.detail} — ${r.live ? 'live' : 'fallback'}`}>
+        <Chip key={r.key} tone={mode === 'mock' ? 'amber' : r.live ? 'green' : 'amber'} size={size} dot title={`${r.label}: ${r.detail} — ${mode === 'mock' ? 'simulated' : r.live ? 'live' : 'fallback'}`}>
           {r.label}
-          {!compact && <span className="text-fg-3">{r.live ? 'live' : 'fallback'}</span>}
+          {!compact && <span className="text-fg-3">{mode === 'mock' ? 'simulated' : r.live ? 'live' : 'fallback'}</span>}
         </Chip>
       ))}
     </div>

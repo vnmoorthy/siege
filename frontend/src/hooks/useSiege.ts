@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api, openSocket } from '../api'
+import { MAX_EVENTS, mergeEvents } from '../lib/events'
 import type { Event, State, WsMessage } from '../types'
 
-export const MAX_EVENTS = 200
+export { MAX_EVENTS } from '../lib/events'
 const POLL_MS = 2000
 const BACKOFF_MIN_MS = 1000
 const BACKOFF_MAX_MS = 15000
@@ -17,16 +18,6 @@ export type Siege = {
   error: string | null
   /** Force an immediate refetch of state + feed (used after admin actions). */
   refresh: () => Promise<void>
-}
-
-function mergeEvents(prev: Event[], incoming: Event[]): Event[] {
-  if (incoming.length === 0) return prev
-  const seen = new Set(prev.map((e) => e.id))
-  const fresh = incoming.filter((e) => !seen.has(e.id))
-  if (fresh.length === 0) return prev
-  // newest first
-  fresh.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0))
-  return [...fresh, ...prev].slice(0, MAX_EVENTS)
 }
 
 /**
@@ -51,7 +42,7 @@ export function useSiege(): Siege {
 
   const refresh = useCallback(async () => {
     try {
-      const [s, f] = await Promise.all([api.state(), api.feed(50)])
+      const [s, f] = await Promise.all([api.state(), api.feed(MAX_EVENTS)])
       if (!alive.current) return
       setState(s)
       setEvents((prev) => mergeEvents(prev, f.events))
@@ -123,15 +114,8 @@ export function useSiege(): Siege {
       })
     }
 
-    // First paint: fetch immediately, then open the socket.
-    Promise.all([api.state(), api.feed(50)])
-      .then(([s, f]) => {
-        if (!alive.current) return
-        setState(s)
-        setEvents((prev) => mergeEvents(prev, f.events))
-        setError(null)
-      })
-      .catch((e: unknown) => alive.current && setError(e instanceof Error ? e.message : String(e)))
+    // Poll immediately and throughout a stalled handshake, then stop on open.
+    startPolling()
     connect()
 
     return () => {

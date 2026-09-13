@@ -33,7 +33,8 @@ export default function Arena() {
     return () => { active = false }
   }, [state?.gate_version])
   const mode = state?.mode ?? (isMockActive() ? 'mock' : null)
-  const activeEvent = events.find(event => ['breach', 'block', 'gate_shipped', 'gate_rejected', 'benign_block'].includes(event.type))
+  const activeEvent = events.find(event => event.data?.synthetic !== true)
+  const eventLabel = activeEvent?.type === 'attack' && activeEvent.data?.phase === 'submitted' ? 'Crowd message received' : activeEvent?.type === 'attack' && activeEvent.data?.phase === 'completed' ? 'Agent replied' : activeEvent ? names[activeEvent.type] : 'Waiting for the first move'
   const defender = state?.defender
   const stage = defender && !defender.ended_at ? defender.stage : 'idle'
   const roundLabel = state?.round?.status === 'live' ? `ROUND ${String(state.round.number).padStart(2, '0')} · LIVE` : state ? 'BETWEEN ROUNDS' : 'CONNECTING'
@@ -47,7 +48,7 @@ export default function Arena() {
     <header className="arena-header">
       <Link className="arena-brand" to={href('/')} aria-label="SIEGE arena"><Swords size={27} /><span>SIEGE</span></Link>
       <span className="arena-round"><span className="arena-status-dot" />{roundLabel}</span>
-      <nav aria-label="Arena navigation"><a href={story}>The story <ArrowUpRight size={14} /></a><Link to={href('/warroom')}>Telemetry</Link><Link to={href('/admin')}>Control</Link></nav>
+      <nav aria-label="Arena navigation"><a href={story}>The story <ArrowUpRight size={14} /></a><Link to={href('/warroom')}>War room</Link><Link to={href('/admin')}>Control</Link></nav>
     </header>
     <section className="arena-stage" aria-labelledby="arena-title">
       <div className="arena-intro">
@@ -63,7 +64,7 @@ export default function Arena() {
       </div>
       <div className="arena-signal">
         <div className="arena-signal-top"><Radio size={14} /><span>{mode === 'mock' ? 'SIMULATED EVENT STREAM' : 'LATEST RECORDED EVENT'}</span><span>{transport === 'ws' ? 'CONNECTED' : transport.toUpperCase()}</span></div>
-        <div className={`arena-event arena-event-${activeEvent?.type ?? 'idle'}`} key={activeEvent?.id ?? 'waiting'}><span className="arena-event-icon"><ShieldCheck size={23} /></span><div><strong>{activeEvent ? names[activeEvent.type] : 'Waiting for the first move'}</strong><p>{activeEvent?.text ?? 'Tool decisions appear here as the room attacks.'}</p>{activeEvent && <small>{new Date(activeEvent.at).toLocaleTimeString()} · ROUND {activeEvent.round}</small>}</div></div>
+        <div className={`arena-event arena-event-${activeEvent?.type ?? 'idle'}`} key={activeEvent?.id ?? 'waiting'}><span className="arena-event-icon"><ShieldCheck size={23} /></span><div><strong>{eventLabel}</strong><p>{activeEvent?.text ?? 'Crowd messages and tool decisions appear here as the room attacks.'}</p>{activeEvent && <small>{new Date(activeEvent.at).toLocaleTimeString()} · ROUND {activeEvent.round}</small>}</div></div>
         <div className="arena-art-caption"><span>ILLUSTRATIVE GATE VISUAL · {mode === 'mock' ? 'MOCK' : 'API'} DATA BELOW</span><button onClick={() => setPlaying(value => !value)} aria-pressed={playing} aria-label={playing ? 'Pause cinematic animation' : 'Play cinematic animation'} disabled={videoFailed}>{playing ? <Pause size={13} /> : <Play size={13} />}</button></div>
       </div>
     </section>

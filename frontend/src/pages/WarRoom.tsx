@@ -11,6 +11,7 @@ import { ConnChip } from '../components/ConnChip'
 import { CountdownRing } from '../components/CountdownRing'
 import { EventRow } from '../components/EventRow'
 import { GateBadge } from '../components/GateBadge'
+import { LiveCrowdLink } from '../components/LiveCrowdLink'
 import { Panel } from '../components/Panel'
 import { ProviderChips } from '../components/ProviderChips'
 import { SiegeField } from '../components/SiegeField'
@@ -19,7 +20,7 @@ import { Stat } from '../components/Stat'
 import { useFieldEnabled } from '../hooks/useFieldEnabled'
 import { useSiege } from '../hooks/useSiege'
 import { COLORS, categoryLabel, int, pct } from '../lib/format'
-import { href } from '../lib/mockFlag'
+import { href, isMockActive } from '../lib/mockFlag'
 import type { GateVersion, LeaderRow, State } from '../types'
 
 // ---------------------------------------------------------------------------
@@ -411,8 +412,9 @@ export default function WarRoom() {
   const { rows, movement } = useLeaderboard(state?.totals.breaches ?? 0, state?.totals.attackers ?? 0)
   const gate = useGateVersion(state?.gate_version)
   const [fieldOn, toggleField] = useFieldEnabled()
-
-  const feed = useMemo(() => events.slice(0, 60), [events])
+  const simulated = isMockActive()
+  const [includeBots, setIncludeBots] = useState(false)
+  const feed = useMemo(() => events.filter(event => simulated || includeBots || event.data?.synthetic !== true).slice(0, 60), [events, simulated, includeBots])
   const round = state?.round ?? null
   const prevRound = useMemo(() => {
     if (!state) return null
@@ -487,7 +489,7 @@ export default function WarRoom() {
           <QRCodeSVG value={state.join_url} size={72} bgColor="#ffffff" fgColor="#07080c" level="M" />
         </div>
         <div className="w-44">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fg">Join the siege</div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fg">{simulated ? 'Try the simulator' : 'Join the siege'}</div>
           <div className="num mt-1 break-all text-[11px] leading-snug text-fg-2">{state.join_url.replace(/^https?:\/\//, '')}</div>
           <div className="num mt-1 text-[11px] text-fg-3">
             {state.totals.online} online · {state.totals.attackers} joined
@@ -547,7 +549,7 @@ export default function WarRoom() {
 
         <div className="flex min-h-0 flex-col gap-4">
           <Panel
-            title="Live feed"
+            title={simulated ? 'Simulated feed' : 'Live crowd feed'}
             right={
               <span className="num text-fg-3">
                 {state.totals.blocks} blocked · {state.totals.benign_blocks} false blocks
@@ -557,10 +559,14 @@ export default function WarRoom() {
             flush
             bodyClassName="scroll-thin overflow-y-auto overflow-x-hidden"
           >
+            {simulated ? <LiveCrowdLink /> : <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-line bg-ink px-3 py-2 text-[10px] text-fg-2">
+              <span>{transport === 'ws' && !error ? 'Connected · newest first' : error ? 'Connection interrupted · retrying' : 'Reconnecting · checking activity'}</span>
+              <label className="flex cursor-pointer items-center gap-1.5"><input type="checkbox" checked={includeBots} onChange={event => setIncludeBots(event.target.checked)} /> Include bots</label>
+            </div>}
             {feed.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center gap-1 px-4 text-center">
-                <div className="text-sm font-medium text-fg-2">Quiet for now</div>
-                <div className="text-xs text-fg-3">Attacks, blocks and breaches stream here as they happen.</div>
+                <div className="text-sm font-medium text-fg-2">Waiting for the crowd</div>
+                <div className="text-xs text-fg-3">Scan the QR to join. Messages, agent replies and tool decisions appear here.</div>
               </div>
             ) : (
               <AnimatePresence initial={false}>
