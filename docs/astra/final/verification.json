@@ -1,0 +1,70 @@
+{
+  "started_at": "2026-09-13T19:28:22.945Z",
+  "origin": "http://127.0.0.1:8768",
+  "mode": "mock",
+  "checks": [
+    {
+      "screen": "arena-desktop",
+      "captured_at": "2026-09-13T19:28:33.059Z",
+      "no_horizontal_overflow": true,
+      "geometry": {
+        "viewport": 1440,
+        "width": 1440,
+        "overflowElements": []
+      },
+      "mock_visible": true,
+      "url": "http://127.0.0.1:8768/?mock=1",
+      "telemetry_href": "/warroom?mock=1",
+      "telemetry_correct": true,
+      "qr_display_url": "127.0.0.1:8768/attack?mock=1",
+      "qr_correct": true,
+      "qr_svg_present": true
+    },
+    {
+      "screen": "arena-mobile",
+      "captured_at": "2026-09-13T19:28:39.450Z",
+      "no_horizontal_overflow": true,
+      "geometry": {
+        "viewport": 390,
+        "width": 390,
+        "overflowElements": [
+          {
+            "tag": "DIV",
+            "class": "arena-art",
+            "right": 663
+          },
+          {
+            "tag": "IMG",
+            "class": "",
+            "right": 663
+          }
+        ]
+      },
+      "mock_visible": true,
+      "url": "http://127.0.0.1:8768/?mock=1",
+      "telemetry_href": "/warroom?mock=1",
+      "telemetry_correct": true,
+      "qr_display_url": "127.0.0.1:8768/attack?mock=1",
+      "qr_correct": true,
+      "qr_svg_present": true
+    },
+    {
+      "screen": "join-mobile",
+      "captured_at": "2026-09-13T19:28:42.262Z",
+      "no_horizontal_overflow": true,
+      "geometry": {
+        "viewport": 390,
+        "width": 390,
+        "overflowElements": []
+      },
+      "mock_visible": true,
+      "url": "http://127.0.0.1:8768/attack?mock=1",
+      "nickname_field_height": 48,
+      "join_button_height": 48,
+      "join_initially_disabled": true
+    }
+  ],
+  "page_errors": [],
+  "network_errors": [],
+  "ended_at": "2026-09-13T19:28:42.848Z"
+}
