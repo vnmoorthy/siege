@@ -495,7 +495,7 @@ export default function WarRoom() {
       </header>
 
       {/* Body */}
-      <div className="grid min-h-0 flex-1 grid-cols-[1fr_440px] gap-4">
+      <div className="relative z-10 grid min-h-0 flex-1 grid-cols-[1fr_440px] gap-4">
         <div className="flex min-h-0 flex-col gap-4">
           <div className="grid shrink-0 grid-cols-6 gap-4">
             <Stat label="Attacks" value={int(state.totals.attacks)} sub={<span className="num">{int(state.current_round.attacks)} this round</span>} />

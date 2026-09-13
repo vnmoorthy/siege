@@ -1,0 +1,7 @@
+{
+  "captured_at": "2026-09-13T18:51:00.391266+00:00",
+  "source": "Read-only SQLite URI mode=ro, PRAGMA query_only=ON",
+  "turn_id": "turn_4989785be4e2",
+  "attacker_id": "a46b82fe2aa0a",
+  "note": "Seeded Nimbus persona, used only to bypass presence-mutating GET endpoint during capture."
+}

@@ -71,9 +71,12 @@ body {
   background-position: -1px -1px;
 }
 
-/* Glassy panel */
+/* Glassy panel — ~85% ink so the live field behind the war room shows through
+   the gaps and edges without hurting legibility */
 .glass {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+    rgba(10, 12, 18, 0.85);
   border: 1px solid var(--color-line);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
