@@ -85,5 +85,8 @@
       "error": "locator.waitFor: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Gate versions', { exact: true }).first() to be visible\u001b[22m\n\u001b[2m    - waiting for \"http://localhost:8000/admin?mock=0\" navigation to finish...\u001b[22m\n\u001b[2m    - navigated to \"http://localhost:8000/admin?mock=0\"\u001b[22m\n"
     }
   ],
-  "capture_ended_at": "2026-09-13T19:05:38.820Z"
+  "capture_ended_at": "2026-09-13T19:05:38.820Z",
+  "video_usable": false,
+  "video_note": "The optional video capture did not produce a usable recording. Do not publish the raw video directory.",
+  "desktop_capture_result": "Unavailable during this capture window. Original war-room navigation timed out at 60 seconds; retry also timed out waiting 120 seconds for the real UI. Admin had comparable navigation/state waits. Shared render/browser resource pressure is a possible cause, not a confirmed diagnosis."
 }

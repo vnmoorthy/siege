@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/hero.png" alt="SIEGE" width="100%">
+  <img src="docs/media/siege_brand_hero.png" alt="SIEGE — Break it. Watch it learn. A live agent security loop." width="100%">
 </p>
 
 # SIEGE
