@@ -1,0 +1,1 @@
+import{C as e,b as t}from"./useSiege-0ZIZm057.js";var n=e(t(),1),r=(0,n.createContext)(null);function i(){let e=(0,n.useContext)(r);if(!e)throw Error(`useToast must be used inside <ToastProvider>`);return e}export{i as n,r as t};
