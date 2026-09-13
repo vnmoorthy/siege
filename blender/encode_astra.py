@@ -46,8 +46,14 @@ if args.interpolate_fps:
               '-frames:v', str(round(len(frames) / args.fps * args.interpolate_fps))]
 mp4 = dest / f'{args.name}.mp4'
 webm = dest / f'{args.name}.webm'
-run(*common, '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', mp4)
-run(*common, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '32', '-row-mt', '1', '-cpu-used', '4', '-pix_fmt', 'yuv420p', '-an', webm)
+mp4_partial = dest / f'.partial_{args.name}.mp4'
+webm_partial = dest / f'.partial_{args.name}.webm'
+run(*common, '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', mp4_partial)
+mp4_partial.replace(mp4)
+shutil.copy2(mp4, public / mp4.name)
+print(f'MP4_READY {mp4}', flush=True)
+run(*common, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '32', '-row-mt', '1', '-cpu-used', '4', '-pix_fmt', 'yuv420p', '-an', webm_partial)
+webm_partial.replace(webm)
 poster = dest / 'siege_poster.jpg'
 poster_input = args.frames / f'frame_{args.poster_frame:04d}.png'
 if not poster_input.exists():

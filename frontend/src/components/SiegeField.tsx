@@ -605,6 +605,13 @@ class FieldEngine {
   private raf = 0
   private running = false
   private disposed = false
+  private w = 1
+  private h = 1
+  // adaptive quality: average frame time over 3 s windows; two slow windows in a
+  // row step the pixel ratio down (never back up, so it cannot oscillate)
+  private perfAcc = 0
+  private perfN = 0
+  private perfSlow = 0
 
   private readonly tmpColor = new THREE.Color()
   private readonly tmpColor2 = new THREE.Color()
@@ -828,6 +835,8 @@ class FieldEngine {
 
   resize(w: number, h: number): void {
     if (this.disposed || w < 2 || h < 2) return
+    this.w = w
+    this.h = h
     this.renderer.setSize(w, h, false)
     this.aspect = w / h
     this.halfW = HALF_H * this.aspect
@@ -1078,11 +1087,29 @@ class FieldEngine {
   private readonly frame = (now: number): void => {
     if (!this.running) return
     this.raf = requestAnimationFrame(this.frame)
-    const dt = Math.min(0.05, Math.max(0, (now - this.last) / 1000))
+    const raw = Math.max(0, (now - this.last) / 1000)
+    const dt = Math.min(0.05, raw)
     this.last = now
     this.time += dt
     this.update(dt)
     this.renderer.render(this.scene, this.camera)
+    this.perfAcc += Math.min(0.25, raw)
+    this.perfN++
+    if (this.perfAcc >= 3) {
+      const avg = this.perfAcc / this.perfN
+      this.perfAcc = 0
+      this.perfN = 0
+      if (avg > 1 / 42) {
+        const dpr = this.renderer.getPixelRatio()
+        if (++this.perfSlow >= 2 && dpr > 1) {
+          this.perfSlow = 0
+          this.renderer.setPixelRatio(Math.max(1, dpr - 0.25))
+          this.resize(this.w, this.h)
+        }
+      } else {
+        this.perfSlow = 0
+      }
+    }
   }
 
   private update(dt: number): void {
@@ -1345,27 +1372,30 @@ export function SiegeField({ state, events }: Props) {
         ref={vignetteRef}
         aria-hidden
         className="pointer-events-none fixed inset-0 z-20"
-        style={{ opacity: 0, background: 'radial-gradient(ellipse at center, rgba(255,59,92,0) 50%, rgba(255,59,92,0.22) 76%, rgba(255,59,92,0.6) 100%)' }}
+        style={{ opacity: 0, willChange: 'opacity', background: 'radial-gradient(ellipse at center, rgba(255,59,92,0) 50%, rgba(255,59,92,0.22) 76%, rgba(255,59,92,0.6) 100%)' }}
       />
-      <AnimatePresence>
-        {flash && (
-          <motion.div
-            key={flash.key}
-            aria-hidden
-            className="pointer-events-none fixed inset-0 z-20 flex flex-col items-center justify-center"
-            initial={{ opacity: 0, scale: 0.6, filter: 'blur(14px)' }}
-            animate={{ opacity: [0, 1, 1, 0], scale: [0.6, 1, 1.04, 1.2], filter: ['blur(14px)', 'blur(0px)', 'blur(0px)', 'blur(8px)'] }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 2.4, times: [0, 0.14, 0.72, 1], ease: 'easeOut' }}
-            onAnimationComplete={() => setFlash((f) => (f && f.key === flash.key ? null : f))}
-          >
-            <div className="num text-[72px] font-black leading-none tracking-[0.35em] text-allow" style={{ textShadow: '0 0 24px rgba(34,197,94,0.85), 0 0 72px rgba(34,197,94,0.45)' }}>
-              GATE v{flash.version}
-            </div>
-            <div className="mt-3 text-[12px] font-semibold uppercase tracking-[0.5em] text-allow/80">new policy live</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* The full-screen container stays static; only the small text block animates
+          (a blur filter on a viewport-sized layer would cost a full-frame pass). */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-20 flex items-center justify-center">
+        <AnimatePresence>
+          {flash && (
+            <motion.div
+              key={flash.key}
+              className="flex flex-col items-center"
+              initial={{ opacity: 0, scale: 0.6, filter: 'blur(14px)' }}
+              animate={{ opacity: [0, 1, 1, 0], scale: [0.6, 1, 1.04, 1.2], filter: ['blur(14px)', 'blur(0px)', 'blur(0px)', 'blur(8px)'] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 2.4, times: [0, 0.14, 0.72, 1], ease: 'easeOut' }}
+              onAnimationComplete={() => setFlash((f) => (f && f.key === flash.key ? null : f))}
+            >
+              <div className="num text-[72px] font-black leading-none tracking-[0.35em] text-allow" style={{ textShadow: '0 0 24px rgba(34,197,94,0.85), 0 0 72px rgba(34,197,94,0.45)' }}>
+                GATE v{flash.version}
+              </div>
+              <div className="mt-3 text-[12px] font-semibold uppercase tracking-[0.5em] text-allow/80">new policy live</div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </>
   )
 }

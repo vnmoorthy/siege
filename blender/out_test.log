@@ -12,3 +12,16 @@
   m.use_nodes = True
 /Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:342: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
   m.use_nodes = True
+03:51.449  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_test/frames/frame_0001.png'
+04:37.012  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_test/frames/frame_0060.png'
+04:41.181  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_test/frames/frame_0120.png'
+04:45.060  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_test/frames/frame_0181.png'
+[siege] projectiles=96 blocked=80 breached=16 objects=538
+[siege] scene built in 16.8s
+[siege] frame 1 rendered in 149.34s
+[siege] frame 60 rendered in 45.35s
+[siege] frame 120 rendered in 4.07s
+[siege] frame 181 rendered in 4.01s
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 01:35:57)
+
+Blender quit

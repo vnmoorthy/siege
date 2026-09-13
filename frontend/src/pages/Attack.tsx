@@ -1,6 +1,6 @@
 import clsx from 'clsx'
-import { AnimatePresence, motion } from 'framer-motion'
-import { Check, ChevronDown, Crown, Lightbulb, Loader2, Lock, Monitor, Package, RotateCcw, Send, Swords, Target, Trophy, User } from 'lucide-react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { ArrowUpRight, Check, ChevronDown, Crown, Lightbulb, Loader2, Lock, Monitor, Package, RotateCcw, Send, Swords, Target, Trophy, User } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api'
@@ -145,6 +145,7 @@ function CelebrationOverlay({ c, onDone }: { c: Celebrate | null; onDone: () => 
 
 function JoinCard({ onJoined }: { onJoined: (a: Attacker) => void }) {
   const toast = useToast()
+  const reduceMotion = useReducedMotion()
   const [nick, setNick] = useState(readStored(NICK_KEY) ?? '')
   const [busy, setBusy] = useState(false)
   const submit = async (e: FormEvent) => {
@@ -168,34 +169,83 @@ function JoinCard({ onJoined }: { onJoined: (a: Attacker) => void }) {
     }
   }
   return (
-    <motion.form onSubmit={submit} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass mx-auto w-full max-w-md p-5">
-      <div className="mb-1 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-breach">
-        <Target size={14} /> Step 1
-      </div>
-      <h1 className="text-xl font-bold">Join the siege</h1>
-      <p className="mt-1 text-sm text-fg-2">
-        You’ll be handed a real Nimbus Outfitters customer to impersonate. Talk the support agent into a forbidden action: a refund, an address change, a discount, a data leak, or store credit. Every breach is exact and scored.
-      </p>
-      <label className="mt-4 block text-xs font-medium text-fg-2" htmlFor="nick">
-        Nickname
-      </label>
-      <div className="mt-1 flex gap-2">
-        <input
-          id="nick"
-          value={nick}
-          onChange={(e) => setNick(e.target.value)}
-          maxLength={24}
-          autoComplete="off"
-          autoCapitalize="off"
-          placeholder="e.g. packet_pirate"
-          className="h-11 min-w-0 flex-1 rounded-lg border border-white/10 bg-black/30 px-3 text-base outline-none focus:border-blue/60"
+    <section className="isolate grid overflow-hidden rounded-[24px] border border-white/10 bg-[#090c10] shadow-[0_24px_100px_-40px_#000] lg:grid-cols-[1.3fr_1fr]">
+      <div className="relative flex min-h-[360px] overflow-hidden sm:min-h-[440px] lg:min-h-[650px]">
+        <img
+          src={`${import.meta.env.BASE_URL}media/siege_keyart.png`}
+          alt=""
+          aria-hidden="true"
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover object-[68%_center]"
         />
-        <button type="submit" disabled={busy || nick.trim().length < 2} className="inline-flex h-11 items-center gap-2 rounded-lg bg-breach px-4 text-sm font-semibold text-white disabled:opacity-40">
-          {busy ? <Loader2 size={16} className="animate-spin" /> : <Swords size={16} />} Join
-        </button>
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,7,10,.84),rgba(4,7,10,.3)_65%,rgba(4,7,10,.12)),linear-gradient(0deg,rgba(4,7,10,.9),transparent_65%)]" />
+        <div className="relative flex w-full flex-col justify-between gap-10 p-7 sm:p-10">
+          <div className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-[.25em] text-white/75">
+            <span className="h-1.5 w-1.5 rounded-full bg-breach" /> The room vs. one agent
+          </div>
+          <div>
+            <h1 className="text-[clamp(4.5rem,10vw,7.8rem)] font-black leading-[.83] tracking-[-.08em] text-white">
+              YOUR<br />MOVE<span className="text-breach">.</span>
+            </h1>
+            <p className="mt-6 max-w-[290px] text-sm leading-relaxed text-white/75 sm:text-base">
+              Find a way through. Every breach gives the defender something to learn.
+            </p>
+          </div>
+          <div className="flex items-center justify-between gap-4 border-t border-white/15 pt-4 text-[10px] font-medium uppercase tracking-[.16em] text-white/55">
+            <span>Attack. Adapt. Try again.</span>
+            <span className="text-[9px] tracking-[.1em]">Loop visualization</span>
+          </div>
+        </div>
       </div>
-      <p className="mt-3 text-[11px] text-fg-3">Shown on the war room leaderboard. Keep it clean.</p>
-    </motion.form>
+      <div className="flex flex-col justify-center border-t border-white/10 p-7 sm:p-10 lg:border-l lg:border-t-0">
+        <motion.form
+          onSubmit={submit}
+          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          aria-busy={busy}
+          className="w-full"
+        >
+          <div className="mb-6 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-breach/30 bg-breach/10 text-breach">
+            <Target size={20} />
+          </div>
+          <div className="text-[10px] font-bold uppercase tracking-[.24em] text-breach">Attacker access</div>
+          <h2 className="mt-2 text-[30px] font-bold leading-tight tracking-[-.04em] text-white sm:text-[34px]">Enter the siege.</h2>
+          <p className="mt-3 text-sm leading-relaxed text-fg-2">
+            Pick a nickname. Get a customer identity, an order, and five bounties. Convince Nimbus support to make a forbidden tool call.
+          </p>
+          <label className="mt-7 block text-xs font-semibold text-fg" htmlFor="nick">Your nickname</label>
+          <input
+            id="nick"
+            value={nick}
+            onChange={(e) => setNick(e.target.value)}
+            maxLength={24}
+            autoComplete="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            aria-describedby="nickname-help"
+            placeholder="packet_pirate"
+            className="mt-2 h-12 w-full rounded-lg border border-white/20 bg-white/[0.04] px-4 text-base text-white outline-none placeholder:text-white/30 focus:border-breach focus:ring-2 focus:ring-breach/20"
+          />
+          <p id="nickname-help" className="mt-2 text-[11px] leading-relaxed text-fg-3">2–24 characters. Shown on the leaderboard.</p>
+          <button
+            type="submit"
+            disabled={busy || nick.trim().length < 2}
+            className="mt-5 flex min-h-12 w-full items-center justify-between gap-3 rounded-lg bg-breach px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[#ff5571] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-breach disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"
+          >
+            <span>{busy ? 'Joining the siege…' : 'Join the siege'}</span>
+            {busy ? <Loader2 size={17} className="animate-spin motion-reduce:animate-none" /> : <ArrowUpRight size={18} />}
+          </button>
+          <Link to={href('/')} className="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-lg text-xs font-medium text-fg-2 hover:bg-white/[0.04] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50">
+            <Monitor size={14} /> Watch the War Room
+          </Link>
+          <div className="mt-6 border-t border-white/10 pt-5 text-[11px] leading-relaxed text-fg-3">
+            <span className="font-medium text-fg-2">Your objective</span>
+            <p className="mt-1">A forbidden action must execute to score. The defender learns from the trace and hardens the gate for the next round.</p>
+          </div>
+        </motion.form>
+      </div>
+    </section>
   )
 }
 
@@ -532,11 +582,6 @@ export default function Attack() {
         ) : !attacker ? (
           <div className="lg:col-span-2">
             <JoinCard onJoined={(a) => setAttacker(a)} />
-            <div className="mx-auto mt-3 max-w-md text-center text-[11px] text-fg-3">
-              <Link to={href('/')} className="inline-flex items-center gap-1 hover:text-fg">
-                <Monitor size={12} /> Open the War Room
-              </Link>
-            </div>
           </div>
         ) : (
           <>

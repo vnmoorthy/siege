@@ -1038,7 +1038,7 @@ class MockSiege {
       defender: run ? structuredClone(run) : null,
       settings: { ...this.settings },
       providers: structuredClone(this.providers),
-      join_url: `${window.location.origin}/attack?mock=1`,
+      join_url: `${window.location.origin}${import.meta.env.BASE_URL}attack?mock=1`,
     }
   }
 
