@@ -297,9 +297,12 @@ class Store:
     def add_event(self, type_: str, text: str, round_no: int, attacker: dict | None = None, data: dict | None = None) -> dict:
         with self.lock:
             self._seq += 1
+            event_data = dict(data or {})
+            if attacker:
+                event_data["synthetic"] = bool(attacker.get("synthetic", False))
             ev = {"id": new_id("e"), "seq": self._seq, "type": type_, "at": now_iso(), "round": round_no,
                   "attacker": ({"id": attacker["id"], "nickname": attacker["nickname"]} if attacker else None),
-                  "text": text, "data": data or {}}
+                  "text": text, "data": event_data}
             self.conn.execute("INSERT INTO events VALUES(?,?,?,?,?,?,?,?,?)",
                               (ev["id"], ev["seq"], type_, ev["at"], round_no, attacker["id"] if attacker else None,
                                attacker["nickname"] if attacker else None, text, _j(ev["data"])))
@@ -308,10 +311,13 @@ class Store:
 
     def events(self, limit: int = 50) -> list[dict]:
         with self.lock:
-            rows = self.conn.execute("SELECT * FROM events ORDER BY seq DESC LIMIT ?", (limit,)).fetchall()
+            rows = self.conn.execute("SELECT e.*, a.synthetic AS attacker_synthetic FROM events e LEFT JOIN attackers a ON a.id=e.attacker_id ORDER BY e.seq DESC LIMIT ?", (limit,)).fetchall()
         out = []
         for r in rows:
             d = _row(r, EVENT_J)
+            synthetic = d.pop("attacker_synthetic")
+            if d.get("attacker_id") and synthetic is not None:
+                d["data"]["synthetic"] = bool(synthetic)
             d["attacker"] = {"id": d.pop("attacker_id"), "nickname": d.pop("nickname")} if d.get("attacker_id") else None
             d.pop("seq", None)
             out.append(d)

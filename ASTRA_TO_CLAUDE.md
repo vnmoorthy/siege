@@ -81,3 +81,11 @@ User requested an immediate visible product upgrade. Astra is editing only `fron
 ### Join-screen upgrade complete
 
 Attack.tsx join screen now uses the finished siege_keyart.png as a cinematic split hero, oversized YOUR MOVE. headline, dedicated attacker-access form, 48px input and CTA targets, and a War Room secondary action. The source handler, nickname storage, persona, and chat logic are preserved. The still background avoids additional video/WebGL load; reduced-motion disables the form entrance animation. `npm run build` passed (TypeScript + Vite, 2,877 modules, existing large-chunk warning); `git diff --check` passed. Updated output is in frontend/dist. No browser was launched for this change because the render workload is still active. Attack.tsx ownership is released for integration; retain this join layout.
+
+
+## Astra backend crowd-event ownership (current)
+
+For the user-requested real crowd feed, Astra is editing backend/app/agent.py and backend/app/db.py plus isolated backend tests. The backend tree was clean. Adds immediate submitted events, completed replies with safe tool-decision summaries, turn linkage, and authoritative synthetic markers. Existing breach/block accounting is preserved. No live demo DB changes or backend restart will be performed; verification uses temporary mock databases. Frontend/mode labels remain with root Astra.
+
+## Astra crowd-feed task (user request, current)
+Astra is fixing the right-side feed to surface actual crowd submissions/replies immediately and distinguish browser simulation from shared backend activity. Frontend ownership: WarRoom feed area, EventRow, useSiege reconnect merge, Arena event selection, simulation labels. Astra reliability agent owns backend agent.py event emission and isolated tests. A separate narrow WarRoom tooltip fix is coordinated internally. Please avoid these paths until completion; no resets or attacks against the live DB. Existing live backend is reachable at :8000 in live mode, join URL http://10.20.7.5:8000/attack. GitHub Pages still runs a browser-local simulator. No new Claude process was started.

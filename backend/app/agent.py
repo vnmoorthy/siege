@@ -92,6 +92,10 @@ class SupportAgent:
         conversation = self._history(attacker["id"]) + [{"role": "user", "content": message}]
         turn_id = new_id("turn_")
         tracing.set_turn(turn_id)
+        HUB.emit(self.store.add_event(
+            "attack", f"{attacker['nickname']} asks: {message[:140]}", round_no, attacker,
+            {"phase": "submitted", "turn_id": turn_id, "message": message, "gate_version": policy["version"]},
+        ))
         tool_calls: list[dict] = []
         reply_parts: list[str] = []
         try:
@@ -121,6 +125,10 @@ class SupportAgent:
         earned = list(attacker.get("earned", []))
         celebrate = None
         for tc in tool_calls:
+            event_data = {"turn_id": turn_id, "message": message, "tool": tc["name"],
+                          "decision": tc["gate"]["decision"], "provider": tc["gate"]["provider"],
+                          "executed": tc["executed"], "oracle_allowed": tc["oracle"]["allowed"],
+                          "gate_version": policy["version"]}
             if tc["breach"]:
                 first = self.store.category_first_in_round(tc["category"], round_no)
                 p = points_for(tc["category"], first)
@@ -135,32 +143,37 @@ class SupportAgent:
                 self.store.insert_breach(b)
                 self.store.add_sample("attack", tc["gate"].get("state", {}), "block", tc["name"], message, "breach")
                 ev = self.store.add_event("breach", f"{attacker['nickname']} breached {CATEGORIES[tc['category']]['title']} via {tc['name']} (+{p})",
-                                          round_no, attacker, {"category": tc["category"], "points": p, "tool": tc["name"], "reason": tc["oracle"]["reason"], "first_of_round": first})
+                                          round_no, attacker, event_data | {"category": tc["category"], "points": p, "reason": tc["oracle"]["reason"], "first_of_round": first})
                 HUB.emit(ev)
                 if celebrate is None or p > celebrate["points"]:
                     celebrate = {"category": tc["category"], "points": p, "first_of_round": first}
             elif tc["benign_block"]:
                 ev = self.store.add_event("benign_block", f"gate blocked a legitimate {tc['name']} for {attacker['nickname']}", round_no, attacker,
-                                          {"tool": tc["name"], "decision": tc["gate"]["decision"]})
+                                          event_data)
                 HUB.emit(ev)
                 self.store.add_sample("benign", tc["gate"].get("state", {}), "allow", tc["name"], message, "observed")
             elif tc["gate"]["decision"] != "allow" or tc["gate"]["prefilter_hit"]:
                 ev = self.store.add_event("block", f"gate blocked {tc['name']} for {attacker['nickname']} ({tc['oracle']['reason']})", round_no, attacker,
-                                          {"tool": tc["name"], "decision": tc["gate"]["decision"], "prefilter": tc["gate"]["prefilter_hit"]})
+                                          event_data | {"prefilter": tc["gate"]["prefilter_hit"]})
                 HUB.emit(ev)
                 self.store.add_sample("attack", tc["gate"].get("state", {}), "block", tc["name"], message, "blocked")
             elif tc["oracle"]["allowed"] and tc["executed"]:
                 if self.store.sample_count("observed") < 120:
                     self.store.add_sample("benign", tc["gate"].get("state", {}), "allow", tc["name"], message, "observed")
-        if not any(tc["breach"] for tc in tool_calls):
-            ev = self.store.add_event("attack", f"{attacker['nickname']}: {message[:90]}", round_no, attacker, {"tools": [tc["name"] for tc in tool_calls]})
-            HUB.emit(ev)
-
         slim_calls = [{k: v for k, v in tc.items() if k != "gate"} | {"gate": {k: v for k, v in tc["gate"].items() if k != "state"}} for tc in tool_calls]
         turn_row = {"id": turn_id, "attacker_id": attacker["id"], "round": round_no, "message": message, "reply": reply, "tool_calls": slim_calls,
                     "breach_points": points, "created_at": now_iso(), "latency_ms": latency, "gate_version": policy["version"]}
         self.store.insert_turn(turn_row)
         self.store.bump_attacker(attacker["id"], points, breaches, earned)
+        # Publish the real reply only after its turn and tool outcomes are durable.
+        decisions = [{"tool": tc["name"], "decision": tc["gate"]["decision"], "provider": tc["gate"]["provider"],
+                      "executed": tc["executed"], "breach": tc["breach"], "benign_block": tc["benign_block"],
+                      "oracle_allowed": tc["oracle"]["allowed"]} for tc in tool_calls]
+        HUB.emit(self.store.add_event(
+            "attack", f"Nimbus replied to {attacker['nickname']}: {reply[:140]}", round_no, attacker,
+            {"phase": "completed", "turn_id": turn_id, "message": message, "reply": reply,
+             "tools": [tc["name"] for tc in tool_calls], "tool_calls": decisions, "gate_version": policy["version"]},
+        ))
         fresh = self.store.attacker(attacker["id"])
         return {"turn": turn_row, "attacker": attacker_view(self.store, fresh), "celebrate": celebrate}
 

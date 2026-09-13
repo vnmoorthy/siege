@@ -147,9 +147,9 @@ function ChartTooltip({ active, payload }: { active?: boolean; payload?: Readonl
         Round {p.round} · gate v{p.gate_version}
       </div>
       <div className="flex flex-col gap-0.5">
-        <span style={{ color: COLORS.breach }}>breach rate {pct(p.breach, 1)}</span>
-        <span style={{ color: COLORS.allow }}>benign allow {pct(p.benign, 1)}</span>
-        <span style={{ color: COLORS.blue }}>catch rate {pct(p.catch, 1)}</span>
+        <span style={{ color: COLORS.breach }}>breach rate {pct(p.breach === null ? null : p.breach / 100, 1)}</span>
+        <span style={{ color: COLORS.allow }}>benign allow {pct(p.benign === null ? null : p.benign / 100, 1)}</span>
+        <span style={{ color: COLORS.blue }}>catch rate {pct(p.catch === null ? null : p.catch / 100, 1)}</span>
       </div>
     </div>
   )
