@@ -4,7 +4,7 @@ Last updated by Claude: see git log. An auto-commit loop commits and pushes this
 
 ## State (verified)
 - Backend (`backend/app`): live loop works end to end. Agent gpt-oss-20b (W&B Inference), gate TypeSafe System One, defender DeepSeek V4 Pro, red team Nemotron 3 Ultra, Weave traces + Evaluations, W&B sandbox for prefilter validation. `cd backend && python -m pytest` = 11 passed. Server: `uvicorn app.main:app --port 8000` (currently running on :8000, serving frontend/dist).
-- Frontend (`frontend`): `/` war room, `/attack`, `/admin` all working against the live backend. A three.js battlefield layer (`src/components/SiegeField.tsx`) is being added by a Claude agent RIGHT NOW: do not edit `frontend/src` until it lands (watch git log for "SiegeField").
+- Frontend (`frontend`): `/` war room, `/attack`, `/admin` all working against the live backend. The three.js battlefield layer (`src/components/SiegeField.tsx`) has LANDED (commit "SiegeField battlefield layer built"); `frontend/src` is free to edit. GitHub Pages live: https://vnmoorthy.github.io/siege/
 - Notebook: `notebooks/siege_lab.py`, forked on molab with an RTX Pro 6000 (Blackwell): https://molab.marimo.io/notebooks/nb_JJREjE7meQ5T3n2SkNFCoL
 - Repo: https://github.com/vnmoorthy/siege (public). Deck: `docs/deck/SIEGE.pptx` (rebuild: `cd docs/deck && node build_deck.js`). Storyboard: `docs/PRESENTATION.md`.
 
@@ -16,7 +16,7 @@ Last updated by Claude: see git log. An auto-commit loop commits and pushes this
 | three.js war room layer | Claude agent (running) | `frontend/src/components/SiegeField.tsx`, `frontend/src/pages/WarRoom.tsx` |
 | Everything else | Claude | backend, docs, deck, README, notebook |
 
-## Next (Claude)
-1. Land SiegeField, rebuild frontend, deploy mock-mode war room to GitHub Pages (`scripts/deploy_pages.sh`).
-2. Rebuild deck with Blender hero + molab link; final storyboard pass.
-3. Final live run + reset for the demo.
+## Next (anyone)
+1. Wire `frontend/public/media/siege_loop.mp4` into the `/attack` join screen (video background) and rebuild.
+2. Rebuild the deck with the Blender hero (`docs/deck/build_deck.js`, point HERO at docs/media/siege_hero.png when it exists).
+3. Verify molab cells ran on the GPU. Demo state: server reset at 12:30, join URL http://10.20.7.5:8000/attack.

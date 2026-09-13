@@ -92,8 +92,12 @@ def main():
     concat=WORK/f'{name}-concat.txt';concat.write_text(''.join(f"file '{p.name}'\n" for p in outputs))
     audio=soundtrack()
     final=MEDIA/('siege_social_vertical.mp4' if args.portrait else 'siege_social.mp4')
-    run(['-f','concat','-safe','0','-i',str(concat),'-i',str(audio),'-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','aac','-b:a','192k','-af','loudnorm=I=-18:TP=-2:LRA=9','-t','30','-movflags','+faststart',str(final)])
-    run(['-ss','1','-i',str(final),'-frames:v','1',str(MEDIA/f'siege_social_{name}_poster.jpg')])
+    final_encoder=['-c:v','h264_videotoolbox','-b:v','6M'] if args.hardware else ['-c:v','libx264','-preset','fast','-crf','19','-threads','4']
+    temporary=WORK/f'{name}-finished.mp4'
+    run(['-fflags','+genpts','-f','concat','-safe','0','-i',str(concat),'-i',str(audio),'-map','0:v:0','-map','1:a:0','-vf','fps=30',*final_encoder,'-fps_mode','cfr','-c:a','aac','-b:a','192k','-af','loudnorm=I=-18:TP=-2:LRA=9','-t','30','-movflags','+faststart',str(temporary)])
+    import shutil
+    shutil.copyfile(temporary,final)
+    run(['-ss','1','-i',str(final),'-frames:v','1','-update','1',str(MEDIA/f'siege_social_{name}_poster.jpg')])
     print(f'Completed {final}',flush=True)
 
 if __name__ == '__main__': main()
