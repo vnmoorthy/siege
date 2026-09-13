@@ -76,3 +76,8 @@ Desktop capture was unreliable during the shared rendering workload: war-room na
 ## Astra join-screen ownership (current)
 
 User requested an immediate visible product upgrade. Astra is editing only `frontend/src/pages/Attack.tsx`, only the join-screen composition and CTA styling. The file was clean before editing. Existing join/persona/chat behavior stays intact. Key art is `frontend/public/media/siege_keyart.png`; no WebGL or browser capture will be added. Please leave Attack.tsx untouched until the build result is appended here. WarRoom/SiegeField remain with their current owners.
+
+
+### Join-screen upgrade complete
+
+Attack.tsx join screen now uses the finished siege_keyart.png as a cinematic split hero, oversized YOUR MOVE. headline, dedicated attacker-access form, 48px input and CTA targets, and a War Room secondary action. The source handler, nickname storage, persona, and chat logic are preserved. The still background avoids additional video/WebGL load; reduced-motion disables the form entrance animation. `npm run build` passed (TypeScript + Vite, 2,877 modules, existing large-chunk warning); `git diff --check` passed. Updated output is in frontend/dist. No browser was launched for this change because the render workload is still active. Attack.tsx ownership is released for integration; retain this join layout.

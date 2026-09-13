@@ -64,7 +64,7 @@ export default function Arena() {
       <div className="arena-signal">
         <div className="arena-signal-top"><Radio size={14} /><span>{mode === 'mock' ? 'SIMULATED EVENT STREAM' : 'LATEST RECORDED EVENT'}</span><span>{transport === 'ws' ? 'CONNECTED' : transport.toUpperCase()}</span></div>
         <div className={`arena-event arena-event-${activeEvent?.type ?? 'idle'}`} key={activeEvent?.id ?? 'waiting'}><span className="arena-event-icon"><ShieldCheck size={23} /></span><div><strong>{activeEvent ? names[activeEvent.type] : 'Waiting for the first move'}</strong><p>{activeEvent?.text ?? 'Tool decisions appear here as the room attacks.'}</p>{activeEvent && <small>{new Date(activeEvent.at).toLocaleTimeString()} · ROUND {activeEvent.round}</small>}</div></div>
-        <div className="arena-art-caption"><span>ILLUSTRATIVE GATE VISUAL · LIVE DATA BELOW</span><button onClick={() => setPlaying(value => !value)} aria-pressed={playing} aria-label={playing ? 'Pause cinematic animation' : 'Play cinematic animation'} disabled={videoFailed}>{playing ? <Pause size={13} /> : <Play size={13} />}</button></div>
+        <div className="arena-art-caption"><span>ILLUSTRATIVE GATE VISUAL · {mode === 'mock' ? 'MOCK' : 'API'} DATA BELOW</span><button onClick={() => setPlaying(value => !value)} aria-pressed={playing} aria-label={playing ? 'Pause cinematic animation' : 'Play cinematic animation'} disabled={videoFailed}>{playing ? <Pause size={13} /> : <Play size={13} />}</button></div>
       </div>
     </section>
     <section className="arena-bottom" aria-label="Current defense and activity">
@@ -74,6 +74,6 @@ export default function Arena() {
       <div className="arena-metric"><span>PATCH EVALUATION</span><strong>{gate?.eval ? `${Math.round(gate.eval.catch_rate * 100)}%` : '—'}</strong><small>{gate?.eval ? `${gate.eval.n_attacks} attack samples · gate v${gate.version}` : 'No evaluated patch yet'}</small></div>
       <div className="arena-metric"><span>LEGITIMATE REQUESTS</span><strong>{gate?.eval ? `${Math.round(gate.eval.benign_allow_rate * 100)}%` : '—'}</strong><small>{gate?.eval ? `${gate.eval.n_benign} benign samples · floor ${Math.round((state?.settings.benign_floor ?? .9) * 100)}%` : 'The defense must preserve access'}</small></div>
     </section>
-    <footer className="arena-footer"><span>{mode === 'mock' ? 'MOCK DATA / INTERACTIVE SIMULATOR' : mode === 'live' ? 'API DATA / CHECK PROVIDERS IN CONTROL' : 'CONNECTING TO LIVE DATA'}</span><span>COREEWEAVE HACKS <i>·</i> WEAVE <i>·</i> TYPESAFE</span>{gate?.eval?.weave_url ? <a href={gate.eval.weave_url} target="_blank" rel="noreferrer">Open the evaluation <ArrowUpRight size={12} /></a> : <Link to={href('/warroom')}>Inspect the full timeline <ArrowUpRight size={12} /></Link>}</footer>
+    <footer className="arena-footer"><span>{mode === 'mock' ? 'MOCK DATA / INTERACTIVE SIMULATOR' : mode === 'live' ? 'API DATA / CHECK PROVIDERS IN CONTROL' : 'CONNECTING TO LIVE DATA'}</span><span>COREWEAVE HACKS <i>·</i> WEAVE <i>·</i> TYPESAFE</span>{gate?.eval?.weave_url ? <a href={gate.eval.weave_url} target="_blank" rel="noreferrer">Open the evaluation <ArrowUpRight size={12} /></a> : <Link to={href('/warroom')}>Inspect the full timeline <ArrowUpRight size={12} /></Link>}</footer>
   </main>
 }
