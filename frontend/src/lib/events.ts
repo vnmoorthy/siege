@@ -2,6 +2,10 @@ import type { Event } from '../types'
 
 export const MAX_EVENTS = 200
 
+// Python timestamps may include microseconds that Date.parse truncates.
+const fraction = (at: string) =>
+  Number((at.match(/T\d{2}:\d{2}:\d{2}\.(\d+)/)?.[1] ?? '').padEnd(9, '0').slice(0, 9))
+
 /** Reconcile live and catch-up events without moving old history above new data. */
 export function mergeEvents(prev: Event[], incoming: readonly Event[]): Event[] {
   const unique = new Map<string, Event>()
@@ -16,6 +20,10 @@ export function mergeEvents(prev: Event[], incoming: readonly Event[]): Event[] 
       const timeOrder = (Number.isNaN(bTime) ? -Infinity : bTime)
         - (Number.isNaN(aTime) ? -Infinity : aTime)
       if (timeOrder && !Number.isNaN(timeOrder)) return timeOrder
+      if (Number.isFinite(aTime) && Number.isFinite(bTime)) {
+        const fractionOrder = fraction(b.at) - fraction(a.at)
+        if (fractionOrder) return fractionOrder
+      }
       // Stable across reconnect/batch arrival order when timestamps tie.
       return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
     })

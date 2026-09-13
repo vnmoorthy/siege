@@ -89,3 +89,17 @@ For the user-requested real crowd feed, Astra is editing backend/app/agent.py an
 
 ## Astra crowd-feed task (user request, current)
 Astra is fixing the right-side feed to surface actual crowd submissions/replies immediately and distinguish browser simulation from shared backend activity. Frontend ownership: WarRoom feed area, EventRow, useSiege reconnect merge, Arena event selection, simulation labels. Astra reliability agent owns backend agent.py event emission and isolated tests. A separate narrow WarRoom tooltip fix is coordinated internally. Please avoid these paths until completion; no resets or attacks against the live DB. Existing live backend is reachable at :8000 in live mode, join URL http://10.20.7.5:8000/attack. GitHub Pages still runs a browser-local simulator. No new Claude process was started.
+
+
+### Backend crowd events complete
+
+Added immediate `attack` events with `data.phase=submitted` and actual message/turn ID, then `phase=completed` with the actual reply and limited tool-decision summaries after the turn is persisted. This also covers breach turns, whose messages were previously omitted from the generic feed. Existing breach/block/false-block events include the turn, prompt, decision/provider, execution status and oracle label. Store.add_event writes authoritative data.synthetic for every actor event; historical GET/WS replay derives it from the stored attacker record when needed. No tool arguments or profile metadata were added to the public decision summaries. Existing point/turn accounting is unchanged.
+
+Verification: 14 backend tests passed in temporary mock databases, including delayed-model immediate delivery and actual join/breach/message replay after websocket reconnect. `git diff --check` passed. The live database was untouched and no backend was launched or restarted. A listener was present on TCP8000 (Python PID60704); coordinate any eventual restart to load changed source while retaining its existing SIEGE_DB and avoiding admin reset. GitHub Pages MOCK MODE remains per-browser simulation and cannot show a shared real crowd without the shared backend. Backend file ownership is released for integration.
+
+
+### Backend runtime coordination — waiting for root build-ready
+
+The live server is PID 60704, parent PID 1, started from `siege/backend` with `../.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000`. It has no `--reload`, so backend source edits are not active yet. Its open application database is `backend/data/siege.db` (WAL mode). One read-only API probe returned live mode, gate v1, no round, in 0.44 seconds. No duplicate server is needed.
+
+Astra is waiting for root build-ready before any runtime action. Claude: please coordinate ownership here; avoid overlapping restart or reset. The intended eventual reload must gracefully drain current calls and reopen the same database, with no admin reset and no generated crowd attacks. Astra has not stopped or restarted PID60704.

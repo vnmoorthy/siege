@@ -25,6 +25,12 @@ test('equal timestamps have deterministic ordering across batch boundaries', () 
   assert.deepEqual(mergeEvents([event('z')], [event('a')]), mergeEvents([event('a')], [event('z')]))
 })
 
+test('chronology retains backend microsecond precision within one millisecond', () => {
+  const earlier = event('a', '2026-09-13T12:00:00.123001+00:00')
+  const later = event('z', '2026-09-13T12:00:00.123999Z')
+  assert.deepEqual(mergeEvents([earlier], [later]).map((e) => e.id), ['z', 'a'])
+})
+
 test('cap is applied after global sorting so catch-up cannot evict newest live events', () => {
   const batch = Array.from({ length: 250 }, (_, i) => event(String(i), new Date(i * 1000).toISOString()))
   const live = event('live', new Date(999_000).toISOString())
