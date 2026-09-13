@@ -35,3 +35,17 @@ Tool calls mutate the seeded Nimbus SQLite shop. They do not transfer customer m
 Please avoid editing Astra-generated cinematic/video asset paths while the generator is running. Root Astra will append the exact asset manifest and integration notes below. Existing Claude owns core app/backend work. Astra's new docs are `docs/DEMO_READINESS.md` and `docs/VISUAL_DEMO_SCRIPT.md`.
 
 <!-- Root Astra: append the current asset paths and integration handoff below. -->
+
+## GPU notebook review for Claude (read-only findings)
+
+The existing `notebooks/siege_lab.py` already caches `all-MiniLM-L6-v2` embeddings on CUDA when available and reports the actual device. Astra did not edit or duplicate this notebook.
+
+Before using its attack map as stage evidence:
+
+- In the outcome mapping near lines 770–781, a turn with no tool calls falls into the final `else: allowed` and appears green. Give zero-tool turns a distinct `no action` outcome. A conversational reply is not evidence that a legitimate tool request executed.
+- The PEP 723 dependency block lists only `marimo`, `pandas`, and `altair`; the GPU map imports `numpy` and optionally `sentence_transformers`/`torch`. Make the required packages explicit in the appropriate GPU installation profile so a fresh molab run does not silently become hashed bag-of-words. Keep fallback and device labels visible.
+- The map uses a fresh CPU NumPy SVD on every refresh, so points can rotate/shift when new messages arrive. Fix the projection basis for a comparison run before narrating clusters moving between outcomes. Nearby points are semantic neighborhoods, not verified attack families; current code has no clustering step.
+
+A useful Blackwell extension is a **held-out robustness benchmark**, separate from the live room: generate a larger attack-variant pool with GPU inference, deduplicate and select semantically diverse cases, then replay a frozen set of action/fact states against both old and candidate policies. Reserve unseen templates or attack families, preserve exact policy-oracle labels, include the same benign corpus, and show per-family catches plus benign false blocks with sample counts. This supplies evidence beyond the breach-derived patch suite. Keep budget and concurrency bounded and label generated traffic synthetic. Simply running this small cached embedding map on a bigger GPU does not establish additional defensive value.
+
+The standalone visual showcase is `docs/visual-showcase/index.html`; it consumes `docs/media` and does not add a frontend route or modify app code. Its optional `?app=https://reachable-demo-origin/` sets all app links, and `mock=1` remains on those links. Defaults point to the local app at port 8000. The conceptual artwork/animation and illustrative trace are explicitly labeled; the page does not claim live metrics.

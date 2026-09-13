@@ -56,13 +56,22 @@ def soundtrack():
     return dest
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--portrait',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--portrait',action='store_true')
+    parser.add_argument('--stills',action='store_true',help='Render opening and closing scenes only while Blender runs.')
+    parser.add_argument('--reuse-stills',action='store_true',help='Keep opening and closing scenes rendered by --stills.')
+    args=parser.parse_args()
     name='portrait' if args.portrait else 'landscape'
     width,height=(1080,1920) if args.portrait else (1920,1080)
     WORK.mkdir(parents=True,exist_ok=True);MEDIA.mkdir(parents=True,exist_ok=True)
     loop=MEDIA/'siege_loop.mp4';art=MEDIA/'siege_keyart.png'
     outputs=[]
     for i,duration in enumerate(DURATIONS):
+        out=WORK/f'{name}-scene-{i}.mp4'
+        if args.stills and i not in (0,4):
+            continue
+        if args.reuse_stills and i in (0,4) and out.exists():
+            outputs.append(out)
+            continue
         use_loop=i in (1,2,3) and loop.exists()
         media_args=['-stream_loop','-1','-i',str(loop)] if use_loop else ['-loop','1','-framerate','30','-i',str(art)]
         media_args+=['-loop','1','-framerate','30','-i',str(WORK/f'{name}-{i}.png')]
@@ -73,9 +82,10 @@ def main():
         else:
             base="[0:v]scale=2400:-1,zoompan=z='min(zoom+0.00010,1.08)':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1920x1080:fps=30,setsar=1[base]"
         filters=base+f';[1:v]format=rgba[title];[base][title]overlay=0:0:shortest=1,fade=t=in:st=0:d=0.35,fade=t=out:st={duration-.25}:d=0.25,format=yuv420p[v]'
-        out=WORK/f'{name}-scene-{i}.mp4'
         run([*media_args,'-filter_complex_threads','2','-filter_complex',filters,'-map','[v]','-t',str(duration),'-c:v','libx264','-preset','fast','-crf','19','-threads','4','-an',str(out)])
         outputs.append(out);print(f'Rendered {name} scene {i+1}/5',flush=True)
+    if args.stills:
+        return
     concat=WORK/f'{name}-concat.txt';concat.write_text(''.join(f"file '{p.name}'\n" for p in outputs))
     audio=soundtrack()
     final=MEDIA/('siege_social_vertical.mp4' if args.portrait else 'siege_social.mp4')

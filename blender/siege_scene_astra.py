@@ -18,6 +18,7 @@ import sys
 import time
 
 import bpy
+import bmesh
 from mathutils import Vector
 
 ap = argparse.ArgumentParser()
@@ -26,6 +27,8 @@ ap.add_argument('--res', nargs=2, type=int, default=[1280, 720])
 ap.add_argument('--start', type=int, default=1)
 ap.add_argument('--end', type=int, default=180)
 ap.add_argument('--samples', type=int, default=24)
+ap.add_argument('--engine', choices=['EEVEE', 'CYCLES'], default='EEVEE')
+ap.add_argument('--device', choices=['CPU', 'GPU'], default='CPU')
 ap.add_argument('--save-blend', action='store_true')
 ap.add_argument('--title', action='store_true')
 args = ap.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
@@ -38,7 +41,27 @@ CORE = Vector((4.7, 0, 3.15))
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
 scene = bpy.context.scene
-scene.render.engine = 'BLENDER_EEVEE'
+scene.render.engine = 'CYCLES' if args.engine == 'CYCLES' else 'BLENDER_EEVEE'
+if args.engine == 'CYCLES':
+    scene.cycles.samples = args.samples
+    scene.cycles.use_denoising = True
+    scene.cycles.device = args.device
+    if args.device == 'GPU':
+        prefs = bpy.context.preferences.addons['cycles'].preferences
+        for backend in ['OPTIX', 'CUDA', 'METAL', 'HIP', 'ONEAPI']:
+            try:
+                prefs.compute_device_type = backend
+                prefs.get_devices()
+                devices = [d for d in prefs.devices if d.type != 'CPU']
+                if devices:
+                    for device in prefs.devices:
+                        device.use = device.type != 'CPU'
+                    print(f'ASTRA_CYCLES_GPU {backend}', flush=True)
+                    break
+            except Exception:
+                continue
+        else:
+            raise RuntimeError('No supported Cycles GPU detected; choose --device CPU.')
 scene.render.resolution_x, scene.render.resolution_y = args.res
 scene.render.resolution_percentage = 100
 scene.render.fps = 30
@@ -85,7 +108,7 @@ red = material('Breach / signal red', (1, .014, .07), 8)
 violet = material('Defender / violet', (.38, .18, 1), 6)
 blue = material('Observability / ice', (.055, .25, .51), 1.4)
 metal = material('Blackened titanium', (.022, .031, .037), .02, .82, .22)
-coremat = material('Agent / smoked ceramic', (.034, .053, .057), .07, .8, .19)
+coremat = material('Agent / smoked ceramic', (.035, .09, .067), .30, .8, .19)
 groundmat = material('Obsidian stage', (.005, .01, .013), 0, .55, .39)
 floorline = material('Stage / barely visible inlay', (.009, .025, .019), .24, .35)
 white = material('Typography / ivory', (.8, .92, .89), .32, .45, .24)
@@ -116,19 +139,35 @@ def ring(name, radius, x, mat, bevel=.014, arc=TAU, start=0):
     obj.location = CENTER
     return obj
 
+ico_meshes = {}
 def ico(name, pos, scale, mat, subdivisions=1):
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=subdivisions, radius=1, location=pos)
-    obj = bpy.context.object
-    obj.name = name
+    key = (subdivisions, mat.name)
+    if key not in ico_meshes:
+        mesh = bpy.data.meshes.new('Shared icosphere / ' + str(key))
+        bm = bmesh.new()
+        bmesh.ops.create_icosphere(bm, subdivisions=subdivisions, radius=1)
+        bm.to_mesh(mesh)
+        bm.free()
+        mesh.materials.append(mat)
+        ico_meshes[key] = mesh
+    obj = bpy.data.objects.new(name, ico_meshes[key])
+    scene.collection.objects.link(obj)
+    obj.location = pos
     obj.scale = (scale,)*3 if isinstance(scale, (int,float)) else scale
-    return assign(obj, mat)
+    return obj
 
+cube_meshes = {}
 def cube(name, pos, scale, mat, bevel=0):
-    bpy.ops.mesh.primitive_cube_add(size=1, location=pos)
-    obj = bpy.context.object
-    obj.name = name
+    if mat.name not in cube_meshes:
+        mesh = bpy.data.meshes.new('Shared cube / ' + mat.name)
+        verts = [(-.5,-.5,-.5),(-.5,-.5,.5),(-.5,.5,-.5),(-.5,.5,.5),(.5,-.5,-.5),(.5,-.5,.5),(.5,.5,-.5),(.5,.5,.5)]
+        mesh.from_pydata(verts, [], [(0,4,6,2),(1,3,7,5),(0,1,5,4),(2,6,7,3),(0,2,3,1),(4,5,7,6)])
+        mesh.materials.append(mat)
+        cube_meshes[mat.name] = mesh
+    obj = bpy.data.objects.new(name, cube_meshes[mat.name])
+    scene.collection.objects.link(obj)
+    obj.location = pos
     obj.scale = scale
-    assign(obj, mat)
     if bevel:
         mod = obj.modifiers.new('Machined corners', 'BEVEL')
         mod.width = bevel
@@ -198,7 +237,7 @@ for j in range(3):
     ob.location=CORE
     ob.rotation_euler=(j*.9,j*.66,j*.56)
     core_orbits.append(ob)
-ico('Protected agent / central light', CORE+Vector((-.55,-.25,.25)), .055, bright, 2)
+ico('Protected agent / central light', CORE+Vector((.4,-.48,.23)), .12, bright, 2)
 
 # Controlled architectural floor lines establish scale; no arcade backdrop.
 cube('Obsidian horizon', (0,0,-.08), (200,200,.1), groundmat)
@@ -388,6 +427,7 @@ update(scene)
 if args.save_blend:
     bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(os.path.join(args.out,'siege_astra.blend')))
 timings=[]
+print(f'ASTRA_SCENE_READY objects={len(scene.objects)}',flush=True)
 for frame in range(args.start,args.end+1):
     scene.frame_set(frame)
     update(scene)

@@ -23,7 +23,7 @@
  */
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import type { DefenderStage, Event, State } from '../types'
 
@@ -35,7 +35,6 @@ THREE.ColorManagement.enabled = false
 // constants
 // ---------------------------------------------------------------------------
 
-const FIELD_KEY = 'siege_field'
 const BG = 0x07080c
 const FOV = 45
 /** Visible half-height of the z=0 plane in world units (width follows aspect). */
