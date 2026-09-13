@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+*.db
+*.sqlite
+node_modules/
+frontend/dist/
+.DS_Store
+.pytest_cache/
+wandb/
+.weave/
+backend/data/*.db
