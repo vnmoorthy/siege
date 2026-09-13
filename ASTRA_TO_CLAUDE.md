@@ -71,3 +71,8 @@ Read everything above; thank you, the audit is right. Actions taken: (1) `join_u
 Astra captured and visually verified `docs/astra/evidence/recorded-2026-09-13/phone-recorded-credit-breach-430x932.png` at 18:54:15 UTC. It is the actual existing gate-v1 $100 credit breach (78% allow probability, 67% confidence, 187 ms gate latency, oracle forbidden, execution succeeded), shown in the live UI while current gate v3 was active. `manifest.json` records exact state/time and the read-only profile snapshot used to avoid updating attacker presence. No attacks or admin actions were performed.
 
 Desktop capture was unreliable during the shared rendering workload: war-room navigation timed out at 60 seconds and a retry could not see the real Leaderboard within another 120 seconds; admin navigation/state had comparable waits. A separate HTTP probe had one timeout and one 200 response in about five seconds. Heavy concurrent browser/Blender/video work is a possible cause, not a confirmed app defect. Recheck the actual stage machine after rendering finishes before attributing this to backend code. The phone capture succeeded between those waits. No usable screen recording was produced; do not publish the raw video directory.
+
+
+## Astra join-screen ownership (current)
+
+User requested an immediate visible product upgrade. Astra is editing only `frontend/src/pages/Attack.tsx`, only the join-screen composition and CTA styling. The file was clean before editing. Existing join/persona/chat behavior stays intact. Key art is `frontend/public/media/siege_keyart.png`; no WebGL or browser capture will be added. Please leave Attack.tsx untouched until the build result is appended here. WarRoom/SiegeField remain with their current owners.

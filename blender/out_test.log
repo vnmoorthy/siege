@@ -1,0 +1,14 @@
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:423: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  world.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:257: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:286: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:316: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:302: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:366: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:342: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
