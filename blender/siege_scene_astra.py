@@ -26,6 +26,7 @@ ap.add_argument('--out', default='blender/astra_frames')
 ap.add_argument('--res', nargs=2, type=int, default=[1280, 720])
 ap.add_argument('--start', type=int, default=1)
 ap.add_argument('--end', type=int, default=180)
+ap.add_argument('--step', type=int, default=1, help='Render every Nth pose, naming output frames consecutively. Encode at 30/N fps.')
 ap.add_argument('--samples', type=int, default=24)
 ap.add_argument('--engine', choices=['EEVEE', 'CYCLES'], default='EEVEE')
 ap.add_argument('--device', choices=['CPU', 'GPU'], default='CPU')
@@ -69,6 +70,7 @@ scene.render.image_settings.file_format = 'PNG'
 scene.render.image_settings.color_mode = 'RGB'
 scene.render.image_settings.color_depth = '8'
 scene.render.film_transparent = False
+scene.render.compositor_device = 'GPU'
 scene.frame_start = 1
 scene.frame_end = 180
 scene.eevee.taa_render_samples = args.samples
@@ -428,10 +430,11 @@ if args.save_blend:
     bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(os.path.join(args.out,'siege_astra.blend')))
 timings=[]
 print(f'ASTRA_SCENE_READY objects={len(scene.objects)}',flush=True)
-for frame in range(args.start,args.end+1):
+for output_index,frame in enumerate(range(args.start,args.end+1,args.step), 1):
     scene.frame_set(frame)
     update(scene)
-    scene.render.filepath=os.path.abspath(os.path.join(args.out,f'frame_{frame:04d}.png'))
+    output_number = output_index if args.step > 1 else frame
+    scene.render.filepath=os.path.abspath(os.path.join(args.out,f'frame_{output_number:04d}.png'))
     started=time.perf_counter()
     bpy.ops.render.render(write_still=True)
     timings.append(time.perf_counter()-started)
