@@ -4,6 +4,10 @@
 
 # SIEGE
 
+[Cinematic arena](https://vnmoorthy.github.io/siege/) · [Product story](https://vnmoorthy.github.io/siege/story/index.html) · [Landscape demo film](docs/media/siege_social.mp4) · [Vertical demo film](docs/media/siege_social_vertical.mp4)
+
+The homepage is the cinematic arena; `/warroom` opens the full telemetry dashboard. The public website is an explicitly labeled interactive simulation. The films illustrate the loop; measured live evidence and its sample counts are in [Demo readiness](docs/DEMO_READINESS.md).
+
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Node 20+](https://img.shields.io/badge/node-20%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e)](LICENSE)
