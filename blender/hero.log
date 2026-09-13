@@ -12,3 +12,10 @@
   m.use_nodes = True
 /Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:352: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
   m.use_nodes = True
+01:35.458  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/claude_loop/siege_hero.png'
+[siege] projectiles=96 blocked=80 breached=16 objects=538
+[siege] scene built in 2.2s
+[siege] hero 3200x1800 @ 128 spp in 82.9s -> /Users/moorthy/Downloads/Projects/Marimo/siege/blender/claude_loop/siege_hero.png
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 01:35:57)
+
+Blender quit
