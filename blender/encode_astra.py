@@ -12,6 +12,7 @@ import subprocess
 parser = argparse.ArgumentParser()
 parser.add_argument('--frames', type=Path, required=True)
 parser.add_argument('--fps', type=int, default=30)
+parser.add_argument('--output-fps', type=int, default=0, help='Duplicate poses to a delivery frame rate without expensive interpolation.')
 parser.add_argument('--ffmpeg', default='/opt/homebrew/bin/ffmpeg')
 parser.add_argument('--name', default='siege_loop')
 parser.add_argument('--poster-frame', type=int, default=28)
@@ -44,6 +45,8 @@ if args.interpolate_fps:
               str(args.frames / 'frame_%04d.png'), '-vf',
               f'minterpolate=fps={args.interpolate_fps}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1',
               '-frames:v', str(round(len(frames) / args.fps * args.interpolate_fps))]
+elif args.output_fps:
+    common += ['-vf', f'fps={args.output_fps}']
 mp4 = dest / f'{args.name}.mp4'
 webm = dest / f'{args.name}.webm'
 mp4_partial = dest / f'.partial_{args.name}.mp4'
@@ -52,7 +55,9 @@ run(*common, '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', '
 mp4_partial.replace(mp4)
 shutil.copy2(mp4, public / mp4.name)
 print(f'MP4_READY {mp4}', flush=True)
-run(*common, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '32', '-row-mt', '1', '-cpu-used', '4', '-pix_fmt', 'yuv420p', '-an', webm_partial)
+run(args.ffmpeg, '-hide_banner', '-loglevel', 'error', '-y', '-i', mp4,
+    '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '34', '-row-mt', '1',
+    '-cpu-used', '8', '-pix_fmt', 'yuv420p', '-an', webm_partial)
 webm_partial.replace(webm)
 poster = dest / 'siege_poster.jpg'
 poster_input = args.frames / f'frame_{args.poster_frame:04d}.png'
@@ -65,6 +70,7 @@ probe = subprocess.run(['/opt/homebrew/bin/ffprobe', '-v', 'error', '-show_strea
 metadata = json.loads(probe.stdout)
 metadata['source_frames'] = len(frames)
 metadata['source_fps'] = args.fps
+metadata['delivery_fps'] = args.interpolate_fps or args.output_fps or args.fps
 metadata['optical_flow_fps'] = args.interpolate_fps or None
 metadata['files'] = {p.name: p.stat().st_size for p in [mp4, webm, poster]}
 (dest / 'siege_render_manifest.json').write_text(json.dumps(metadata, indent=2) + '\n')

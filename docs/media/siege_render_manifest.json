@@ -1,0 +1,82 @@
+{
+  "source_frames": 90,
+  "source_fps": 15,
+  "delivery_fps": 30,
+  "optical_flow_main": false,
+  "render_engine": "Blender 5.2 EEVEE",
+  "render_samples": 8,
+  "render_mean_seconds": 9.53,
+  "benchmark_1280_720_16samples_mean_seconds": 15.071,
+  "files": {
+    "siege_loop.mp4": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 960,
+          "height": 540,
+          "pix_fmt": "yuv420p",
+          "r_frame_rate": "30/1",
+          "nb_frames": "180"
+        }
+      ],
+      "format": {
+        "duration": "6.000000",
+        "size": "730398"
+      }
+    },
+    "siege_loop.webm": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "vp9",
+          "width": 960,
+          "height": 540,
+          "pix_fmt": "yuv420p",
+          "r_frame_rate": "30/1"
+        }
+      ],
+      "format": {
+        "duration": "6.000000",
+        "size": "589202"
+      }
+    },
+    "siege_poster.jpg": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mjpeg",
+          "width": 960,
+          "height": 540,
+          "pix_fmt": "yuvj444p",
+          "r_frame_rate": "25/1"
+        }
+      ],
+      "format": {
+        "duration": "0.040000",
+        "size": "77485"
+      }
+    },
+    "siege_loop_interpolated.mp4": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 960,
+          "height": 540,
+          "pix_fmt": "yuv420p",
+          "r_frame_rate": "30/1",
+          "nb_frames": "180"
+        }
+      ],
+      "format": {
+        "duration": "6.000000",
+        "size": "930503"
+      }
+    }
+  }
+}

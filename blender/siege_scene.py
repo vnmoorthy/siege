@@ -107,11 +107,19 @@ def reset_blender():
     prefs.keyframe_new_handle_type = "AUTO_CLAMPED"
 
 
+def loop_frame(frame):
+    """Fold a frame into [1, 1 + LOOP)."""
+    return 1.0 + (frame - 1.0) % LOOP
+
+
 def keyed(obj, path, frame, value=None, wrap=True):
-    """Set `path` on obj and key it. With wrap=True the key is duplicated at
-    frame +- LOOP so the animation is periodic over the loop."""
+    """Set `path` on obj and key it. With wrap=True the key is folded into the
+    loop and duplicated at frame +- LOOP, so every curve has keys on both
+    sides of the rendered range and the animation is periodic."""
     if value is not None:
         setattr(obj, path, value)
+    if wrap:
+        frame = loop_frame(frame)
     offs = (-LOOP, 0, LOOP) if wrap else (0,)
     for off in offs:
         obj.keyframe_insert(data_path=path, frame=frame + off)
@@ -144,6 +152,8 @@ class Track:
         bag = act.layers.new("Layer").strips.new(type="KEYFRAME").channelbag(slot, ensure=True)
         offs = (-LOOP, 0, LOOP) if self.wrap else (0,)
         for (path, idx), pts in self.keys.items():
+            if self.wrap:
+                pts = [(loop_frame(f), v) for f, v in pts]
             pts = sorted((f + off, v) for off in offs for f, v in pts)
             fc = bag.fcurves.new(path, index=idx)
             fc.keyframe_points.add(len(pts))
