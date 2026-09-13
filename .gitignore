@@ -13,3 +13,10 @@ wandb/
 backend/data/*.db
 *.db-wal
 *.db-shm
+frontend/dist-pages/
+blender/out/
+blender/render/
+blender/frames/
+*.blend1
+notebooks/__marimo__/
+notebooks/_preview*

@@ -47,8 +47,18 @@ def _(Path, mo, os):
         _nb_dir = None
     _nb_dir = Path(_nb_dir) if _nb_dir else Path.cwd()
     _prod = (_nb_dir.parent / "backend" / "data" / "siege.db").resolve()
-    _smoke = Path("/tmp/siege_live_smoke.db")
-    _default = str(_prod) if _prod.exists() else (str(_smoke) if _smoke.exists() else str(_prod))
+    _candidates = [_prod, _nb_dir / "siege.db", _nb_dir / "siege_demo.db", Path("/tmp/siege_live_smoke.db")]
+    _default = next((str(c) for c in _candidates if c.exists()), None)
+    if _default is None:
+        # No local store (e.g. a fresh molab sandbox): fetch the demo snapshot captured from a live siege.
+        try:
+            import urllib.request
+
+            _snap = _nb_dir / "siege_demo.db"
+            urllib.request.urlretrieve("https://raw.githubusercontent.com/vnmoorthy/siege/main/docs/data/siege_demo.db", _snap)
+            _default = str(_snap)
+        except Exception:
+            _default = str(_prod)
     _default = os.environ.get("SIEGE_DB") or _default  # env override: SIEGE_DB=/path/x.db marimo run ...
 
     db_path = mo.ui.text(
@@ -725,6 +735,107 @@ def _(attackers_df, breaches_df, db_error, mo, pd):
 
 
 @app.cell
+def _():
+    # Session cache for the attack map: embeddings keyed by message so refresh ticks only encode new attacks.
+    _embed_cache = {"model": None, "backend": None, "device": None, "vectors": {}}
+    return (_embed_cache,)
+
+
+@app.cell
+def _(mo):
+    mo.md("""
+    ## Attack map (GPU)
+    Every message the room sent, embedded and projected to 2-D. Colour is the exact outcome:
+    **red** breached, **amber** blocked by the gate, **violet** a legitimate request that was
+    wrongly blocked, **green** allowed and legitimate. Clusters are attack families; the defender's
+    job is to move whole clusters from red to amber without touching the green ones. On molab this
+    cell runs `all-MiniLM-L6-v2` on the notebook's GPU (an NVIDIA Blackwell when one is attached);
+    without a GPU it falls back to CPU, and without sentence-transformers to a hashed bag-of-words.
+    """)
+    return
+
+
+@app.cell
+def _(_embed_cache, alt, calls, db_error, mo, pd, turns_df):
+    mo.stop(bool(db_error) or turns_df is None or len(turns_df) == 0, mo.callout("No attacks yet: the map fills in as the room attacks.", kind="neutral"))
+    import numpy as np
+
+    # one row per turn with its exact outcome
+    _rows = []
+    for _, _t in turns_df.iterrows():
+        _tc = calls[calls["turn_id"] == _t["id"]] if "turn_id" in calls.columns else calls.iloc[0:0]
+        if len(_tc) and bool(_tc["breach"].any()):
+            _out = "breach"
+        elif len(_tc) and bool(_tc["benign_block"].any()):
+            _out = "false block"
+        elif len(_tc) and bool((_tc["decision"] != "allow").any()):
+            _out = "blocked"
+        else:
+            _out = "allowed"
+        _rows.append({"message": str(_t["message"])[:300], "outcome": _out, "round": _t.get("round"), "points": int(_t.get("breach_points") or 0)})
+    _df = pd.DataFrame(_rows)
+    _texts = _df["message"].tolist()
+
+    def _hash_embed(texts, dim=256):
+        import hashlib
+
+        M = np.zeros((len(texts), dim), dtype=np.float32)
+        for i, t in enumerate(texts):
+            for tok in t.lower().split():
+                h = int(hashlib.md5(tok.encode()).hexdigest(), 16)
+                M[i, h % dim] += 1.0
+        n = np.linalg.norm(M, axis=1, keepdims=True)
+        return M / np.maximum(n, 1e-6)
+
+    _missing = [t for t in _texts if t not in _embed_cache["vectors"]]
+    if _missing:
+        if _embed_cache["model"] is None and _embed_cache["backend"] is None:
+            try:
+                import torch
+                from sentence_transformers import SentenceTransformer
+
+                _dev = "cuda" if torch.cuda.is_available() else "cpu"
+                _embed_cache["model"] = SentenceTransformer("all-MiniLM-L6-v2", device=_dev)
+                _embed_cache["backend"] = "all-MiniLM-L6-v2"
+                _embed_cache["device"] = torch.cuda.get_device_name(0) if _dev == "cuda" else "cpu"
+            except Exception:
+                _embed_cache["backend"] = "hashed bag-of-words"
+                _embed_cache["device"] = "cpu"
+        if _embed_cache["model"] is not None:
+            _vecs = _embed_cache["model"].encode(_missing, batch_size=256, normalize_embeddings=True)
+        else:
+            _vecs = _hash_embed(_missing)
+        for t, v in zip(_missing, _vecs):
+            _embed_cache["vectors"][t] = np.asarray(v, dtype=np.float32)
+    X = np.stack([_embed_cache["vectors"][t] for t in _texts])
+    _Xc = X - X.mean(axis=0, keepdims=True)
+    if len(_texts) >= 3:
+        _U, _S, _Vt = np.linalg.svd(_Xc, full_matrices=False)
+        _P = _Xc @ _Vt[:2].T
+    else:
+        _P = np.zeros((len(_texts), 2))
+    _df["x"], _df["y"] = _P[:, 0], _P[:, 1]
+
+    _chart = (
+        alt.Chart(_df)
+        .mark_circle(opacity=0.85)
+        .encode(
+            x=alt.X("x:Q", axis=None), y=alt.Y("y:Q", axis=None),
+            color=alt.Color("outcome:N", scale=alt.Scale(domain=["breach", "blocked", "false block", "allowed"], range=["#ff3b5c", "#ffb020", "#a78bfa", "#22c55e"])),
+            size=alt.Size("points:Q", scale=alt.Scale(range=[40, 400]), legend=None),
+            tooltip=["message:N", "outcome:N", "round:Q", "points:Q"],
+        )
+        .properties(height=420, width="container", title=f"{len(_df)} messages, {int((_df['outcome'] == 'breach').sum())} breaches")
+        .interactive()
+    )
+    mo.vstack([
+        mo.callout(mo.md(f"Embedding backend: **{_embed_cache['backend']}** on **{_embed_cache['device']}** (cached {len(_embed_cache['vectors'])} messages)"), kind="info"),
+        mo.ui.altair_chart(_chart),
+    ])
+    return
+
+
+@app.cell
 def _(get_trace_name, mo, set_trace_name, trace_limit, traces_df):
     # --- Cell 10a: trace filter (kept across refresh ticks via mo.state) --------------
     _names = ["All"]
@@ -781,7 +892,7 @@ def _(mo):
 
     The DB path box at the top defaults to `backend/data/siege.db`; leave the refresh timer
     on while the room attacks and every cell re-reads the store. The file carries its own
-    inline dependencies (`marimo`, `pandas`, `altair`) and uses only those plus `sqlite3`
+    inline dependencies (`marimo`, `pandas`, `altair`, `numpy`, optional `sentence-transformers` for the GPU attack map) and uses only those plus `sqlite3`
     and the standard library, so the **same file runs unchanged on
     [molab](https://molab.marimo.io)**: upload it together with a `siege.db` snapshot and
     point the path box at it.
