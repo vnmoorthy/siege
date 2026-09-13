@@ -170,7 +170,7 @@ function JoinCard({ onJoined }: { onJoined: (a: Attacker) => void }) {
   }
   return (
     <section className="isolate grid overflow-hidden rounded-[24px] border border-white/10 bg-[#090c10] shadow-[0_24px_100px_-40px_#000] lg:grid-cols-[1.3fr_1fr]">
-      <div className="relative flex min-h-[360px] overflow-hidden sm:min-h-[440px] lg:min-h-[650px]">
+      <div className="relative flex min-h-[285px] overflow-hidden sm:min-h-[440px] lg:min-h-[650px]">
         <img
           src={`${import.meta.env.BASE_URL}media/siege_keyart.png`}
           alt=""
@@ -180,7 +180,7 @@ function JoinCard({ onJoined }: { onJoined: (a: Attacker) => void }) {
           className="absolute inset-0 h-full w-full object-cover object-[68%_center]"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,7,10,.84),rgba(4,7,10,.3)_65%,rgba(4,7,10,.12)),linear-gradient(0deg,rgba(4,7,10,.9),transparent_65%)]" />
-        <div className="relative flex w-full flex-col justify-between gap-10 p-7 sm:p-10">
+        <div className="relative flex w-full flex-col justify-between gap-5 p-6 sm:gap-10 sm:p-10">
           <div className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-[.25em] text-white/75">
             <span className="h-1.5 w-1.5 rounded-full bg-breach" /> The room vs. one agent
           </div>
@@ -237,7 +237,7 @@ function JoinCard({ onJoined }: { onJoined: (a: Attacker) => void }) {
             {busy ? <Loader2 size={17} className="animate-spin motion-reduce:animate-none" /> : <ArrowUpRight size={18} />}
           </button>
           <Link to={href('/')} className="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-lg text-xs font-medium text-fg-2 hover:bg-white/[0.04] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50">
-            <Monitor size={14} /> Watch the War Room
+            <Monitor size={14} /> Watch the Arena
           </Link>
           <div className="mt-6 border-t border-white/10 pt-5 text-[11px] leading-relaxed text-fg-3">
             <span className="font-medium text-fg-2">Your objective</span>

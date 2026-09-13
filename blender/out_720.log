@@ -1,0 +1,180 @@
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:433: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  world.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:267: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:296: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:326: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:312: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:376: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/moorthy/Downloads/Projects/Marimo/siege/blender/siege_scene.py:352: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+00:07.033  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0001.png'
+[siege] projectiles=96 blocked=80 breached=16 objects=538
+[siege] scene built in 0.9s
+[siege] frame 1 rendered in 3.42s
+00:08.555  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0002.png'
+[siege] frame 2 rendered in 1.52s
+00:09.549  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0003.png'
+[siege] frame 3 rendered in 0.99s
+00:10.438  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0004.png'
+[siege] frame 4 rendered in 0.89s
+00:11.436  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0005.png'
+[siege] frame 5 rendered in 1.00s
+00:12.347  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0006.png'
+[siege] frame 6 rendered in 0.91s
+00:13.150  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0007.png'
+[siege] frame 7 rendered in 0.80s
+00:14.146  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0008.png'
+[siege] frame 8 rendered in 1.00s
+00:15.495  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0009.png'
+[siege] frame 9 rendered in 1.35s
+00:16.411  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0010.png'
+[siege] frame 10 rendered in 0.92s
+00:17.422  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0011.png'
+[siege] frame 11 rendered in 1.01s
+00:18.398  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0012.png'
+[siege] frame 12 rendered in 0.98s
+00:19.422  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0013.png'
+[siege] frame 13 rendered in 1.02s
+00:20.301  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0014.png'
+[siege] frame 14 rendered in 0.88s
+00:21.435  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0015.png'
+[siege] frame 15 rendered in 1.13s
+00:22.749  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0016.png'
+[siege] frame 16 rendered in 1.31s
+00:23.575  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0017.png'
+[siege] frame 17 rendered in 0.83s
+00:24.504  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0018.png'
+[siege] frame 18 rendered in 0.93s
+00:25.268  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0019.png'
+[siege] frame 19 rendered in 0.76s
+00:26.083  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0020.png'
+[siege] frame 20 rendered in 0.81s
+00:26.899  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0021.png'
+[siege] frame 21 rendered in 0.82s
+00:27.728  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0022.png'
+[siege] frame 22 rendered in 0.83s
+00:28.848  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0023.png'
+[siege] frame 23 rendered in 1.12s
+00:30.504  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0024.png'
+[siege] frame 24 rendered in 1.66s
+00:31.951  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0025.png'
+[siege] frame 25 rendered in 1.45s
+00:33.381  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0026.png'
+[siege] frame 26 rendered in 1.43s
+00:34.648  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0027.png'
+[siege] frame 27 rendered in 1.27s
+00:35.980  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0028.png'
+[siege] frame 28 rendered in 1.33s
+00:36.887  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0029.png'
+[siege] frame 29 rendered in 0.91s
+00:37.843  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0030.png'
+[siege] frame 30 rendered in 0.96s
+00:38.869  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0031.png'
+[siege] frame 31 rendered in 1.03s
+00:40.266  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0032.png'
+[siege] frame 32 rendered in 1.40s
+00:41.157  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0033.png'
+[siege] frame 33 rendered in 0.89s
+00:42.014  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0034.png'
+[siege] frame 34 rendered in 0.86s
+00:42.899  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0035.png'
+[siege] frame 35 rendered in 0.88s
+00:43.961  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0036.png'
+[siege] frame 36 rendered in 1.06s
+00:45.734  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0037.png'
+[siege] frame 37 rendered in 1.78s
+00:47.495  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0038.png'
+[siege] frame 38 rendered in 1.75s
+00:48.935  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0039.png'
+[siege] frame 39 rendered in 1.44s
+00:50.466  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0040.png'
+[siege] frame 40 rendered in 1.53s
+00:51.997  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0041.png'
+[siege] frame 41 rendered in 1.53s
+00:53.014  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0042.png'
+[siege] frame 42 rendered in 1.02s
+00:54.222  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0043.png'
+[siege] frame 43 rendered in 1.21s
+00:57.609  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0044.png'
+[siege] frame 44 rendered in 3.38s
+01:00.360  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0045.png'
+[siege] frame 45 rendered in 2.75s
+01:03.401  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0046.png'
+[siege] frame 46 rendered in 3.04s
+01:07.083  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0047.png'
+[siege] frame 47 rendered in 3.68s
+01:10.252  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0048.png'
+[siege] frame 48 rendered in 3.17s
+01:11.831  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0049.png'
+[siege] frame 49 rendered in 1.58s
+01:13.708  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0050.png'
+[siege] frame 50 rendered in 1.88s
+01:14.997  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0051.png'
+[siege] frame 51 rendered in 1.29s
+01:17.305  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0052.png'
+[siege] frame 52 rendered in 2.31s
+01:18.419  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0053.png'
+[siege] frame 53 rendered in 1.11s
+01:19.464  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0054.png'
+[siege] frame 54 rendered in 1.04s
+01:22.103  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0055.png'
+[siege] frame 55 rendered in 2.64s
+01:24.014  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0056.png'
+[siege] frame 56 rendered in 1.91s
+01:25.336  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0057.png'
+[siege] frame 57 rendered in 1.33s
+01:26.366  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0058.png'
+[siege] frame 58 rendered in 1.03s
+01:27.347  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0059.png'
+[siege] frame 59 rendered in 0.98s
+01:28.281  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0060.png'
+[siege] frame 60 rendered in 0.93s
+01:29.356  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0061.png'
+[siege] frame 61 rendered in 1.07s
+01:30.167  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0062.png'
+[siege] frame 62 rendered in 0.81s
+01:31.059  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0063.png'
+[siege] frame 63 rendered in 0.89s
+01:32.159  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0064.png'
+[siege] frame 64 rendered in 1.10s
+01:37.130  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0065.png'
+[siege] frame 65 rendered in 4.97s
+01:39.313  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0066.png'
+[siege] frame 66 rendered in 2.18s
+01:40.076  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0067.png'
+[siege] frame 67 rendered in 0.76s
+01:40.745  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0068.png'
+[siege] frame 68 rendered in 0.67s
+01:41.352  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0069.png'
+[siege] frame 69 rendered in 0.61s
+01:42.003  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0070.png'
+[siege] frame 70 rendered in 0.65s
+01:42.770  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0071.png'
+[siege] frame 71 rendered in 0.77s
+01:43.910  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0072.png'
+[siege] frame 72 rendered in 1.14s
+01:45.000  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0073.png'
+[siege] frame 73 rendered in 1.09s
+01:46.898  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0074.png'
+[siege] frame 74 rendered in 1.90s
+01:48.079  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0075.png'
+[siege] frame 75 rendered in 1.18s
+01:49.136  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0076.png'
+[siege] frame 76 rendered in 1.06s
+01:49.926  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0077.png'
+[siege] frame 77 rendered in 0.79s
+01:50.697  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0078.png'
+[siege] frame 78 rendered in 0.77s
+01:51.364  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0079.png'
+[siege] frame 79 rendered in 0.67s
+01:52.202  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0080.png'
+[siege] frame 80 rendered in 0.84s
+01:52.936  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0081.png'
+[siege] frame 81 rendered in 0.73s
+01:53.654  render           | Saved: '/Users/moorthy/Downloads/Projects/Marimo/siege/blender/out_720/frames/frame_0082.png'
+[siege] frame 82 rendered in 0.72s

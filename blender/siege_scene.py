@@ -471,10 +471,10 @@ def build(scene):
 
     # Core
     core = new_obj("Core", mesh_sphere("CoreMesh", 0.4, 48, 24), mat_core(), rig)
-    core_col = mix(BLUE, WHITE, 0.25)
+    core_col = mix(BLUE, WHITE, 0.12)
     for f in range(1, LOOP + 2, 3):
         t = (f - 1) / LOOP
-        core.color = core_col[:3] + (6.5 + 2.0 * math.sin(2 * TAU * t),)
+        core.color = core_col[:3] + (3.4 + 1.2 * math.sin(2 * TAU * t),)
         core.keyframe_insert("color", frame=f)
 
     # Lights ---------------------------------------------------------------
