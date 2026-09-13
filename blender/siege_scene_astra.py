@@ -77,7 +77,7 @@ def material(name, color, emission=0, metallic=0, rough=.36):
     p.inputs['Emission Strength'].default_value = emission
     return m
 
-emerald = material('Gate / energized emerald', (.018, .78, .285), 5)
+emerald = material('Gate / energized emerald', (.018, .78, .285), 3.4)
 dim_green = material('Gate / dark teal tracery', (.014, .12, .09), 1.2, .6)
 bright = material('Gate / luminous edge', (.31, 1, .63), 9)
 amber = material('Attack / amber', (1, .255, .025), 6)
@@ -87,6 +87,7 @@ blue = material('Observability / ice', (.055, .25, .51), 1.4)
 metal = material('Blackened titanium', (.022, .031, .037), .02, .82, .22)
 coremat = material('Agent / smoked ceramic', (.034, .053, .057), .07, .8, .19)
 groundmat = material('Obsidian stage', (.005, .01, .013), 0, .55, .39)
+floorline = material('Stage / barely visible inlay', (.009, .025, .019), .24, .35)
 white = material('Typography / ivory', (.8, .92, .89), .32, .45, .24)
 
 def assign(obj, mat):
@@ -201,10 +202,10 @@ ico('Protected agent / central light', CORE+Vector((-.55,-.25,.25)), .055, brigh
 
 # Controlled architectural floor lines establish scale; no arcade backdrop.
 cube('Obsidian horizon', (0,0,-.08), (200,200,.1), groundmat)
-for i in range(-12,13):
-    curve('Stage / long line', [(-23,i*2,-.016),(19,i*2,-.016)], dim_green, .002)
-for i in range(-10,11):
-    curve('Stage / cross line', [(i*2,-24,-.016),(i*2,24,-.016)], dim_green, .002)
+for i in range(-5,6):
+    curve('Stage / long line', [(-23,i*4,-.016),(19,i*4,-.016)], floorline, .002)
+for i in range(-5,6):
+    curve('Stage / cross line', [(i*4,-24,-.016),(i*4,24,-.016)], floorline, .002)
 floor_ring=curve('Gate / floor projection', [(CENTER.x+2.95*math.cos(i*TAU/180),2.95*math.sin(i*TAU/180),.008) for i in range(180)], dim_green,.008,True)
 for j in range(5):
     theta = j*TAU/5
@@ -320,10 +321,10 @@ def hide(ob):
 def update(scene):
     phase=((scene.frame_current-1)%180)/180
     theta=TAU*phase
-    cam.location=(13.8+.3*math.sin(theta),-17.2+.2*math.cos(theta),8.7+.10*math.sin(theta))
+    cam.location=(13.8+.3*math.sin(theta),-17.2+.2*math.cos(theta),7.1+.10*math.sin(theta))
     aim(cam,(-.7,0,3.15))
     for i,ob in enumerate(lattice):
-        ob.rotation_euler.x=-theta*(1 if i%2 else 2)/3 if False else -theta
+        ob.rotation_euler.x=-theta
     for j,ob in enumerate(core_orbits):
         ob.rotation_euler=(j*.9+theta,j*.66,j*.56)
     core.rotation_euler=(theta,theta,0)
