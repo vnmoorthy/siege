@@ -737,8 +737,8 @@ def _(attackers_df, breaches_df, db_error, mo, pd):
 @app.cell
 def _():
     # Session cache for the attack map: embeddings keyed by message so refresh ticks only encode new attacks.
-    _embed_cache = {"model": None, "backend": None, "device": None, "vectors": {}}
-    return (_embed_cache,)
+    embed_cache = {"model": None, "backend": None, "device": None, "vectors": {}}
+    return (embed_cache,)
 
 
 @app.cell
@@ -756,7 +756,7 @@ def _(mo):
 
 
 @app.cell
-def _(_embed_cache, alt, calls, db_error, mo, pd, turns_df):
+def _(embed_cache, alt, calls, db_error, mo, pd, turns_df):
     mo.stop(bool(db_error) or turns_df is None or len(turns_df) == 0, mo.callout("No attacks yet: the map fills in as the room attacks.", kind="neutral"))
     import numpy as np
 
@@ -787,27 +787,27 @@ def _(_embed_cache, alt, calls, db_error, mo, pd, turns_df):
         n = np.linalg.norm(M, axis=1, keepdims=True)
         return M / np.maximum(n, 1e-6)
 
-    _missing = [t for t in _texts if t not in _embed_cache["vectors"]]
+    _missing = [t for t in _texts if t not in embed_cache["vectors"]]
     if _missing:
-        if _embed_cache["model"] is None and _embed_cache["backend"] is None:
+        if embed_cache["model"] is None and embed_cache["backend"] is None:
             try:
                 import torch
                 from sentence_transformers import SentenceTransformer
 
                 _dev = "cuda" if torch.cuda.is_available() else "cpu"
-                _embed_cache["model"] = SentenceTransformer("all-MiniLM-L6-v2", device=_dev)
-                _embed_cache["backend"] = "all-MiniLM-L6-v2"
-                _embed_cache["device"] = torch.cuda.get_device_name(0) if _dev == "cuda" else "cpu"
+                embed_cache["model"] = SentenceTransformer("all-MiniLM-L6-v2", device=_dev)
+                embed_cache["backend"] = "all-MiniLM-L6-v2"
+                embed_cache["device"] = torch.cuda.get_device_name(0) if _dev == "cuda" else "cpu"
             except Exception:
-                _embed_cache["backend"] = "hashed bag-of-words"
-                _embed_cache["device"] = "cpu"
-        if _embed_cache["model"] is not None:
-            _vecs = _embed_cache["model"].encode(_missing, batch_size=256, normalize_embeddings=True)
+                embed_cache["backend"] = "hashed bag-of-words"
+                embed_cache["device"] = "cpu"
+        if embed_cache["model"] is not None:
+            _vecs = embed_cache["model"].encode(_missing, batch_size=256, normalize_embeddings=True)
         else:
             _vecs = _hash_embed(_missing)
         for t, v in zip(_missing, _vecs):
-            _embed_cache["vectors"][t] = np.asarray(v, dtype=np.float32)
-    X = np.stack([_embed_cache["vectors"][t] for t in _texts])
+            embed_cache["vectors"][t] = np.asarray(v, dtype=np.float32)
+    X = np.stack([embed_cache["vectors"][t] for t in _texts])
     _Xc = X - X.mean(axis=0, keepdims=True)
     if len(_texts) >= 3:
         _U, _S, _Vt = np.linalg.svd(_Xc, full_matrices=False)
@@ -829,7 +829,7 @@ def _(_embed_cache, alt, calls, db_error, mo, pd, turns_df):
         .interactive()
     )
     mo.vstack([
-        mo.callout(mo.md(f"Embedding backend: **{_embed_cache['backend']}** on **{_embed_cache['device']}** (cached {len(_embed_cache['vectors'])} messages)"), kind="info"),
+        mo.callout(mo.md(f"Embedding backend: **{embed_cache['backend']}** on **{embed_cache['device']}** (cached {len(embed_cache['vectors'])} messages)"), kind="info"),
         mo.ui.altair_chart(_chart),
     ])
     return
