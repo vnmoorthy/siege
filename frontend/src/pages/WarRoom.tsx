@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowDown, ArrowUp, Bot, Crown, Minus, Smartphone, Swords } from 'lucide-react'
+import { ArrowDown, ArrowUp, Bot, Crown, Minus, Orbit, Smartphone, Swords } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -13,6 +13,7 @@ import { EventRow } from '../components/EventRow'
 import { GateBadge } from '../components/GateBadge'
 import { Panel } from '../components/Panel'
 import { ProviderChips } from '../components/ProviderChips'
+import { SiegeField, useFieldEnabled } from '../components/SiegeField'
 import { StageStepper } from '../components/StageStepper'
 import { Stat } from '../components/Stat'
 import { useSiege } from '../hooks/useSiege'
@@ -408,6 +409,7 @@ export default function WarRoom() {
   const { state, events, transport, error } = useSiege()
   const { rows, movement } = useLeaderboard(state?.totals.breaches ?? 0, state?.totals.attackers ?? 0)
   const gate = useGateVersion(state?.gate_version)
+  const [fieldOn, toggleField] = useFieldEnabled()
 
   const feed = useMemo(() => events.slice(0, 60), [events])
   const round = state?.round ?? null
